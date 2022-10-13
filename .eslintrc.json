@@ -1,0 +1,24 @@
+{
+  "extends": ["react-app", "plugin:@next/next/recommended"],
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "rules": {
+    "jsx-a11y/anchor-is-valid": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["src/app/*"],
+      "rules": {
+        "import/no-default-export": "error"
+      }
+    },
+    {
+      "files": ["**/*.ts', '**/*.tsx"],
+      "rules": {
+        "import/no-anonymous-default-export": "off"
+      }
+    }
+  ]
+}
