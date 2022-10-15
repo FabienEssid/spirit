@@ -1,9 +1,16 @@
-import type { AppProps } from 'next/app';
+import { Providers } from '@/Providers';
 
-import '../styles/global.css';
+import '../../styles/global.css';
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
-}
+export const App = ({
+    Component,
+    pageProps: { session, ...pageProps },
+}: any) => {
+    return (
+        <Providers session={session}>
+            <Component {...pageProps} />
+        </Providers>
+    );
+};
 
-export default MyApp;
+export default App;
