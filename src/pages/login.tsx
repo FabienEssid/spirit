@@ -8,7 +8,6 @@ import Image from 'next/image';
 import { Spinner } from '@/components';
 import { FieldInput } from '@/components/FieldInput';
 import { Head } from '@/layout';
-import { ROUTE_ROOT } from '@/utils/constants/routes';
 
 export const PageLogin: React.FC = () => {
     const form = useForm();
@@ -19,7 +18,6 @@ export const PageLogin: React.FC = () => {
             const response = await signIn('email', {
                 email,
                 redirect: false,
-                callbackUrl: ROUTE_ROOT,
             });
 
             if (!response?.ok || response?.error) {
@@ -59,18 +57,18 @@ export const PageLogin: React.FC = () => {
                         Spirit
                     </h2>
                 </div>
-                <section className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <section className="mt-8 sm:mx-auto w-full sm:w-full sm:max-w-md">
+                    <div className="bg-white py-8 px-4 sm:shadow sm:rounded-lg sm:px-10">
                         {isEmailSent ? (
-                            <div>
-                                <p>An email has been sucessfully sent ✅</p>
+                            <div className="flex flex-col items-start h-full">
+                                <p>An email has been sucessfully sent 🎉</p>
                                 <p className="text-gray-400">
                                     Go to your inbox and click the link to sign
-                                    in
+                                    in !
                                 </p>
                                 <button
                                     type="button"
-                                    className=" mt-4 hover:underline text-primary-400"
+                                    className="mt-8 hover:underline text-primary-400 flex-1"
                                     onClick={() => setIsEmailSent(false)}
                                 >
                                     ← Back to sign in
