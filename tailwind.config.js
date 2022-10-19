@@ -17,6 +17,9 @@ module.exports = {
                     900: '#21000e',
                 },
             },
+            flexGrow: {
+                2: 2,
+            },
         },
     },
     plugins: [require('@tailwindcss/forms')],

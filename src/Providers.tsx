@@ -54,6 +54,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
                 USER_MANDATORY_FIELDS
             )
         ) {
+            console.log({ session });
             router.push(ROUTE_ACCOUNT);
         } else {
             router.push(ROUTE_ROOT);

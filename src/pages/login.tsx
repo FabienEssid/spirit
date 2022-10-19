@@ -95,9 +95,6 @@ export const PageLogin: React.FC = () => {
                                             <FieldInput
                                                 name="email"
                                                 type="email"
-                                                defaultValue="fabien.essid@gmail.com"
-                                                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-400 focus:outline-none focus:ring-primary-400 sm:text-sm"
-                                                autoComplete="email"
                                                 required
                                             />
                                         </div>
