@@ -8,21 +8,11 @@ export const Spinner: React.FC<SpinnerType> = ({
     size = 'md',
     ...props
 }) => {
-    const sizes = {
-        xs: 4,
-        sm: 6,
-        md: 8,
-        lg: 10,
-        xl: 12,
-    };
-
     return (
         <div role="status" {...props}>
             <svg
                 aria-hidden="true"
-                className={`mr-2 w-${sizes[size]} h-${
-                    sizes[size]
-                } text-gray-200 animate-spin dark:text-gray-800 ${
+                className={`mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-gray-800 ${
                     !isMonochrome ? `fill-primary-400` : 'fill-gray-100'
                 }`}
                 viewBox="0 0 100 101"
