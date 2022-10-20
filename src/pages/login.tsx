@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 
+import {
+    Box,
+    Button,
+    Container,
+    Flex,
+    Heading,
+    Stack,
+    Text,
+    useBreakpointValue,
+    useColorModeValue,
+} from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
 import { useMutation } from '@tanstack/react-query';
 import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 
-import { Spinner } from '@/components';
-import { FieldInput } from '@/components/FieldInput';
+import { FieldInput, Loading } from '@/components';
 import { Head } from '@/layout';
 
 export const PageLogin: React.FC = () => {
@@ -37,7 +47,6 @@ export const PageLogin: React.FC = () => {
     );
 
     const handleValidSubmit = (values: any) => {
-        console.log({ values });
         login(values.email);
     };
 
@@ -48,78 +57,105 @@ export const PageLogin: React.FC = () => {
         <>
             <Head />
 
-            <main className="flex min-h-full h-screen flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
-                <div className="flex flex-col items-center sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="relative h-20 w-20">
-                        <Image src="/assets/img/logo.png" layout="fill" />
-                    </div>
-                    <h2 className="mt-6 text-center text-6xl font-bold tracking-tight text-gray-900">
-                        Spirit
-                    </h2>
-                </div>
-                <section className="mt-8 sm:mx-auto w-full sm:w-full sm:max-w-md">
-                    <div className="bg-white py-8 px-4 sm:shadow sm:rounded-lg sm:px-10">
+            <Container
+                maxW="lg"
+                h="100vh"
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                py={{ base: '12', md: '24' }}
+                px={{ base: '0', sm: '8' }}
+            >
+                <Stack spacing="8">
+                    <Stack spacing="6" alignItems="center">
+                        <Box position="relative" w="20" h="20">
+                            <Image src="/assets/img/logo.png" layout="fill" />
+                        </Box>
+                        <Stack
+                            spacing={{ base: '2', md: '3' }}
+                            textAlign="center"
+                        >
+                            <Heading as="h2" fontSize="6xl" fontWeight="bold">
+                                Spirit
+                            </Heading>
+                        </Stack>
+                    </Stack>
+
+                    <Box
+                        py={{ base: '0', sm: '8' }}
+                        px={{ base: '4', sm: '10' }}
+                        bg={useBreakpointValue({
+                            base: 'transparent',
+                            sm: 'bg-surface',
+                        })}
+                        boxShadow={{
+                            base: 'none',
+                            sm: useColorModeValue('md', 'md-dark'),
+                        }}
+                        borderRadius={{ base: 'none', sm: 'xl' }}
+                    >
                         {isEmailSent ? (
-                            <div className="flex flex-col items-start h-full">
-                                <p>An email has been sucessfully sent 🎉</p>
-                                <p className="text-gray-400">
+                            <Flex
+                                flexDirection="column"
+                                alignItems="items-start"
+                                h="full"
+                            >
+                                <Text fontWeight="bold">
+                                    An email has been sucessfully sent 🎉
+                                </Text>
+                                <Text color="gray-400">
                                     Go to your inbox and click the link to sign
                                     in !
-                                </p>
-                                <button
-                                    type="button"
-                                    className="mt-8 hover:underline text-primary-400 flex-1"
+                                </Text>
+                                <Button
+                                    variant="link"
+                                    colorScheme="primary"
+                                    w="fit-content"
+                                    fontWeight="400"
+                                    mt="6"
                                     onClick={() => setIsEmailSent(false)}
                                 >
                                     ← Back to sign in
-                                </button>
-                            </div>
+                                </Button>
+                            </Flex>
                         ) : (
                             <Formiz
                                 connect={form}
                                 onValidSubmit={handleValidSubmit}
+                                autoForm
                             >
-                                <form
-                                    noValidate
-                                    onSubmit={form.submit}
-                                    className="space-y-6"
-                                >
-                                    <div>
-                                        <label
-                                            htmlFor="email"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            Email address
-                                        </label>
-                                        <div className="mt-1">
-                                            <FieldInput
-                                                name="email"
-                                                type="email"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <button
+                                <Stack spacing="6">
+                                    <Stack spacing="5">
+                                        <FieldInput
+                                            type="email"
+                                            name="email"
+                                            label="Email address"
+                                            required
+                                        />
+                                    </Stack>
+                                    <Stack spacing="12">
+                                        <Button
                                             type="submit"
-                                            className="flex w-full justify-center items-center rounded-md border border-transparent bg-primary-400 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 disabled:bg-primary-200 disabled:cursor-not-allowed"
+                                            variant="solid"
+                                            colorScheme="primary"
                                             disabled={shouldDisableSubmitButton}
                                         >
                                             {isLoading && (
-                                                <Spinner
-                                                    isMonochrome
-                                                    size="xs"
+                                                <Loading
+                                                    color="gray.100"
+                                                    size="sm"
+                                                    mr="2"
                                                 />
                                             )}
                                             Sign in
-                                        </button>
-                                    </div>
-                                </form>
+                                        </Button>
+                                    </Stack>
+                                </Stack>
                             </Formiz>
                         )}
-                    </div>
-                </section>
-            </main>
+                    </Box>
+                </Stack>
+            </Container>
         </>
     );
 };

@@ -1,5 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 
+import {
+    Button,
+    Container,
+    Heading,
+    Icon,
+    Stack,
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
+    VStack,
+} from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
 import {
     ArrowRightOnRectangleIcon,
@@ -11,12 +24,11 @@ import axios from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
-import { FieldInput, Spinner } from '@/components';
+import { Card, FieldInput, Loading } from '@/components';
 import { db } from '@/db/prisma';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
 export const PageMe: React.FC<{ user: User }> = ({ user }) => {
-    const [currentTab, setCurrentTab] = useState('account');
     const form = useForm();
 
     const subNavigation = [
@@ -52,122 +64,117 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
         (form.isSubmitted && !form.isValid) || isLoading;
 
     return (
-        <main className="h-screen flex mx-auto max-w-3xl pb-10 lg:py-12 lg:px-8">
-            <div className="flex w-full space-x-4">
-                <aside className="py-6 px-2 sm:px-6 lg:py-0 lg:px-0 grow">
-                    <nav className="space-y-1">
-                        {subNavigation.map((item) => (
-                            <button
-                                key={item.name}
-                                type="button"
-                                className={`w-full ${
-                                    currentTab === item.value
-                                        ? 'bg-white text-primary-400 hover:bg-gray-50'
-                                        : 'text-gray-900 hover:text-gray-900 hover:bg-gray-50 '
-                                }
-                                    group rounded-md px-3 py-2 flex items-center text-sm font-medium`}
-                                aria-current={
-                                    currentTab === item.value
-                                        ? 'page'
-                                        : undefined
-                                }
+        <Container
+            variant="full"
+            width="full"
+            pb="10"
+            maxWidth="container.md"
+            py={{ base: 'auto', lg: 12 }}
+            px={{ base: 'auto', lg: 8 }}
+        >
+            <Stack spacing="24" direction="row" w="full">
+                <Tabs
+                    display="flex"
+                    flexDirection={{ base: 'column', md: 'row' }}
+                    w="full"
+                    variant="unstyled"
+                    orientation="vertical"
+                    isFitted
+                >
+                    <TabList
+                        w={{ base: 'full', md: '48' }}
+                        minW={{ base: 'full', md: '48' }}
+                        height="fit-content"
+                    >
+                        <VStack spacing="1">
+                            {subNavigation.map((item) => (
+                                <Tab
+                                    key={item.name}
+                                    _selected={{
+                                        backgroundColor: 'gray.50',
+                                        color: 'primary.400',
+                                        fontWeight: 600,
+                                    }}
+                                    _hover={{ backgroundColor: 'gray.50' }}
+                                    borderRadius="md"
+                                    w="full"
+                                    justifyContent="flex-start"
+                                >
+                                    <Icon as={item.icon} mr="2" />
+                                    {item.name}
+                                </Tab>
+                            ))}
+                        </VStack>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel px={{ base: '0', md: '4' }} py="0" pr="0">
+                            <Card
+                                boxShadow={{ base: 'none', md: 'md' }}
+                                h={{ base: 'full', md: 'fit-content' }}
                             >
-                                <item.icon
-                                    className={`${
-                                        currentTab === item.value
-                                            ? 'text-primary-400'
-                                            : 'text-gray-400 group-hover:text-gray-500 '
-                                    }
-                                        flex-shrink-0 -ml-1 mr-3 h-6 w-6`}
-                                    aria-hidden="true"
-                                />
-                                <span className="truncate">{item.name}</span>
-                            </button>
-                        ))}
-                    </nav>
-                </aside>
-
-                <div className="space-y-6 sm:px-6 lg:px-0 px-4 grow-2">
-                    <section aria-labelledby="my-account-heading">
-                        <Formiz
-                            autoForm
-                            connect={form}
-                            onValidSubmit={handleValidSubmit}
-                        >
-                            <div className="shadow sm:overflow-hidden sm:rounded-md">
-                                <div className="bg-white py-6 px-4 sm:p-6">
-                                    <div>
-                                        <h2
-                                            id="my-account-heading"
-                                            className="text-lg font-medium leading-6 "
-                                        >
-                                            My account
-                                        </h2>
-                                    </div>
-
-                                    <div className="mt-6">
-                                        <div>
-                                            <label
-                                                htmlFor="email"
-                                                className="block text-sm font-medium text-gray-700"
-                                            >
-                                                Email{' '}
-                                                <span className="text-red-600">
-                                                    *
-                                                </span>
-                                            </label>
-                                            <FieldInput
-                                                required
-                                                type="email"
-                                                name="email"
-                                                id="email"
-                                                className="max-w-md"
-                                                defaultValue={user.email || ''}
-                                                disabled
-                                            />
-
-                                            <label
-                                                htmlFor="firstName"
-                                                className="mt-4 block text-sm font-medium text-gray-700"
-                                            >
-                                                First name{' '}
-                                                <span className="text-red-600">
-                                                    *
-                                                </span>
-                                            </label>
-                                            <FieldInput
-                                                required
-                                                type="text"
-                                                name="firstName"
-                                                id="firstName"
-                                                className="max-w-md"
-                                                defaultValue={user.name || ''}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6">
-                                        <button
+                                <Formiz
+                                    autoForm
+                                    connect={form}
+                                    onValidSubmit={handleValidSubmit}
+                                >
+                                    <Heading as="h2" fontSize="lg">
+                                        My account
+                                    </Heading>
+                                    <VStack
+                                        alignItems="flex-start"
+                                        spacing="6"
+                                        mt="4"
+                                    >
+                                        <FieldInput
+                                            type="email"
+                                            name="email"
+                                            label="Email address"
+                                            defaultValue={user.email || ''}
+                                            isDisabled
+                                            required
+                                            maxWidth="container.md"
+                                            w="full"
+                                        />
+                                        <FieldInput
+                                            type="text"
+                                            name="firstName"
+                                            label="First name"
+                                            defaultValue={user.name || ''}
+                                            required
+                                            maxWidth="container.md"
+                                            w="full"
+                                        />
+                                        <Button
                                             type="submit"
-                                            className="flex justify-center items-center rounded-md border border-transparent bg-primary-400 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 disabled:bg-primary-200 disabled:cursor-not-allowed"
-                                            disabled={shouldDisableSubmitButton}
+                                            variant="solid"
+                                            colorScheme="primary"
+                                            isDisabled={
+                                                shouldDisableSubmitButton
+                                            }
                                         >
                                             {isLoading && (
-                                                <Spinner
-                                                    isMonochrome
-                                                    size="xs"
-                                                />
+                                                <Loading size="sm" mr="2" />
                                             )}
                                             Save profile
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </Formiz>
-                    </section>
-                </div>
-            </div>
-        </main>
+                                        </Button>
+                                    </VStack>
+                                </Formiz>
+                            </Card>
+                        </TabPanel>
+                        <TabPanel py="0" pr="0">
+                            <Card
+                                boxShadow={{ base: 'none', md: 'md' }}
+                                h={{ base: 'full', md: 'fit-content' }}
+                            >
+                                <Heading as="h2" fontSize="lg">
+                                    Sign out
+                                </Heading>
+                            </Card>
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
+            </Stack>
+        </Container>
     );
 };
 

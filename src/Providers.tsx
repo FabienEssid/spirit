@@ -1,10 +1,12 @@
 import { ReactNode } from 'react';
 
+import { ChakraProvider, Container } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-import { Spinner } from '@/components';
+import { Loading } from '@/components';
+import { applicationTheme } from '@/theme';
 import {
     SESSION_AUTHENTICATED,
     SESSION_LOADING,
@@ -15,19 +17,20 @@ import {
     ROUTE_LOGIN,
     ROUTE_ROOT,
 } from '@/utils/constants/routes';
-
-import { USER_MANDATORY_FIELDS } from './utils/constants/user';
-import { isMissingAtLeastOneMandatoryField } from './utils/functions/global';
+import { USER_MANDATORY_FIELDS } from '@/utils/constants/user';
+import { isMissingAtLeastOneMandatoryField } from '@/utils/functions/global';
 
 const queryClient = new QueryClient();
 
-const Loading = () => {
-    return (
-        <div className="flex justify-center items-center h-screen">
-            <Spinner size="xl" />
-        </div>
-    );
-};
+const ProviderLoading = () => (
+    <Container variant="full">
+        <Loading
+            containerProps={{ p: '3' }}
+            variant="full"
+            color="primary.400"
+        />
+    </Container>
+);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: session, status } = useSession();
@@ -35,11 +38,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (status === SESSION_UNAUTHENTICATED && router.pathname !== ROUTE_LOGIN) {
         router.push(ROUTE_LOGIN);
-        return <Loading />;
+        return <ProviderLoading />;
     }
 
     if (status === SESSION_LOADING) {
-        return <Loading />;
+        return <ProviderLoading />;
     }
 
     if (
@@ -67,9 +70,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const Providers = ({ session, children }: any) => {
     return (
         <SessionProvider session={session}>
-            <QueryClientProvider client={queryClient}>
-                <AuthProvider>{children}</AuthProvider>
-            </QueryClientProvider>
+            <ChakraProvider theme={applicationTheme}>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider>{children}</AuthProvider>
+                </QueryClientProvider>
+            </ChakraProvider>
         </SessionProvider>
     );
 };

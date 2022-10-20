@@ -1,27 +1,43 @@
+import { Box, Button, Flex, Heading, Stack } from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 
 export const PageHome = () => {
     return (
-        <main className="flex min-h-full h-screen flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
-            <div className="flex flex-col items-center sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="relative h-20 w-20">
+        <Flex
+            h="100vh"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            py="12"
+            px={{ base: 6, lg: 8 }}
+        >
+            <Flex
+                flexDirection="column"
+                alignItems="center"
+                mx="auto"
+                w="full"
+                maxW={{ base: 'full', sm: 'container.md' }}
+            >
+                <Box position="relative" w="20" h="20">
                     <Image src="/assets/img/logo.png" layout="fill" />
-                </div>
-                <h2 className="mt-6 text-center text-6xl font-bold tracking-tight text-gray-900">
-                    Spirit
-                </h2>
-            </div>
-            <div className="mt-8">
-                <button
-                    type="button"
-                    className="flex justify-center rounded-md border border-transparent bg-primary-400 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2"
+                </Box>
+                <Stack spacing={{ base: '2', md: '3' }} textAlign="center">
+                    <Heading as="h2" fontSize="6xl" fontWeight="bold">
+                        Spirit
+                    </Heading>
+                </Stack>
+            </Flex>
+            <Box mt="8">
+                <Button
+                    variant="solid"
+                    colorScheme="primary"
                     onClick={() => signOut()}
                 >
                     Sign out
-                </button>
-            </div>
-        </main>
+                </Button>
+            </Box>
+        </Flex>
     );
 };
 
