@@ -13,15 +13,25 @@ import {
 } from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
 import { useMutation } from '@tanstack/react-query';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
-import { FieldInput, Loading } from '@/components';
+import { FieldInput, Loading, LoadingScreen } from '@/components';
 import { Head } from '@/layout';
+import { ROUTE_ROOT } from '@/utils/constants/routes';
 
 export const PageLogin: React.FC = () => {
+    const { status } = useSession();
+    const router = useRouter();
     const form = useForm();
     const [isEmailSent, setIsEmailSent] = useState(false);
+
+    const boxBackgroundColor = useBreakpointValue({
+        base: 'transparent',
+        sm: 'bg-surface',
+    });
+    const boxBoxShadow = useColorModeValue('md', 'md-dark');
 
     const { mutate: login, isLoading } = useMutation(
         async (email?: string) => {
@@ -45,6 +55,11 @@ export const PageLogin: React.FC = () => {
             },
         }
     );
+
+    if (status === 'authenticated') {
+        router.push(ROUTE_ROOT);
+        return <LoadingScreen />;
+    }
 
     const handleValidSubmit = (values: any) => {
         login(values.email);
@@ -84,13 +99,10 @@ export const PageLogin: React.FC = () => {
                     <Box
                         py={{ base: '0', sm: '8' }}
                         px={{ base: '4', sm: '10' }}
-                        bg={useBreakpointValue({
-                            base: 'transparent',
-                            sm: 'bg-surface',
-                        })}
+                        bg={boxBackgroundColor}
                         boxShadow={{
                             base: 'none',
-                            sm: useColorModeValue('md', 'md-dark'),
+                            sm: boxBoxShadow,
                         }}
                         borderRadius={{ base: 'none', sm: 'xl' }}
                     >

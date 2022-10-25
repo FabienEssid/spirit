@@ -2,10 +2,8 @@ import React from 'react';
 
 import {
     Button,
-    Container,
     Heading,
     Icon,
-    Stack,
     Tab,
     TabList,
     TabPanel,
@@ -24,9 +22,11 @@ import axios from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
-import { Card, FieldInput, Loading } from '@/components';
+import { Card, FieldInput, Link, Loading } from '@/components';
 import { db } from '@/db/prisma';
+import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { ROUTE_SIGN_OUT } from '@/utils/constants/routes';
 
 export const PageMe: React.FC<{ user: User }> = ({ user }) => {
     const form = useForm();
@@ -64,15 +64,9 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
         (form.isSubmitted && !form.isValid) || isLoading;
 
     return (
-        <Container
-            variant="full"
-            width="full"
-            pb="10"
-            maxWidth="container.md"
-            py={{ base: 'auto', lg: 12 }}
-            px={{ base: 'auto', lg: 8 }}
-        >
-            <Stack spacing="24" direction="row" w="full">
+        <Layout>
+            <LayoutHeader />
+            <LayoutBody>
                 <Tabs
                     display="flex"
                     flexDirection={{ base: 'column', md: 'row' }}
@@ -167,14 +161,19 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
                                 h={{ base: 'full', md: 'fit-content' }}
                             >
                                 <Heading as="h2" fontSize="lg">
-                                    Sign out
+                                    <Link
+                                        href={ROUTE_SIGN_OUT}
+                                        buttonProps={{ colorScheme: 'primary' }}
+                                    >
+                                        Sign out
+                                    </Link>
                                 </Heading>
                             </Card>
                         </TabPanel>
                     </TabPanels>
                 </Tabs>
-            </Stack>
-        </Container>
+            </LayoutBody>
+        </Layout>
     );
 };
 
