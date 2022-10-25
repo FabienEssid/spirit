@@ -12,6 +12,19 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Media {
+  id         String      @id @default(cuid())
+  type       MediaType
+  url        String      @db.Text
+  wineMedias WineMedia[]
+  userMedias UserMedia[]
+}
+
 model Account {
   id                 String  @id @default(cuid())
   userId             String
@@ -44,9 +57,18 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
-  image         String?
+  image         UserMedia?
   accounts      Account[]
   sessions      Session[]
+}
+
+model UserMedia {
+  media Media    @relation(fields: [mediaId], references: [id])
+  mediaId String
+  user User?     @relation(fields: [userId], references: [id])
+  userId String  @unique
+
+  @@id([mediaId, userId])
 }
 
 model VerificationToken {
@@ -55,4 +77,38 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model WineCharacteristic {
+  id    String                      @id @default(cuid())
+  name  String
+  wines WineCharacteristicsOnWines[]
+}
+
+model Wine {
+  id                 String                      @id @default(cuid())
+  name               String
+  description        String?                     @db.Text
+  wineCharacteristics WineCharacteristicsOnWines[]
+  medias             WineMedia[]
+  rating             Int?
+  isFavorite         Boolean
+}
+
+model WineMedia {
+  media   Media  @relation(fields: [mediaId], references: [id])
+  mediaId String
+  wine    Wine   @relation(fields: [wineId], references: [id])
+  wineId  String
+
+  @@id([mediaId, wineId])
+}
+
+model WineCharacteristicsOnWines {
+  wine                Wine              @relation(fields: [wineId], references: [id])
+  wineId              String
+  wineCharacteristic   WineCharacteristic @relation(fields: [wineCharacteristicId], references: [id])
+  wineCharacteristicId String
+
+  @@id([wineId, wineCharacteristicId])
 }
