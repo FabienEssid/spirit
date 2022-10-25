@@ -22,6 +22,7 @@ export const authOptions: NextAuthOptions = {
     ],
     pages: {
         signIn: '/login',
+        newUser: '/app/me',
     },
     // callbacks: {
     //     authorized({ req, token }) {
