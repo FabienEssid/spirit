@@ -44,11 +44,6 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
         async ({ name }: { name: string }): Promise<void> => {
             const result = await axios.post(`/api/user/${user.id}`, { name });
             return result.data;
-        },
-        {
-            onSuccess(data) {
-                console.log({ data });
-            },
         }
     );
 
@@ -56,7 +51,6 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
         email: string;
         firstName: string;
     }) => {
-        console.log('handleValidSubmit', { values });
         mutate({ name: values.firstName });
     };
 

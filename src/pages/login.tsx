@@ -14,10 +14,9 @@ import {
 import { Formiz, useForm } from '@formiz/core';
 import { useMutation } from '@tanstack/react-query';
 import { signIn, useSession } from 'next-auth/react';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 
-import { FieldInput, Loading, LoadingScreen } from '@/components';
+import { FieldInput, Loading, LoadingScreen, Logo } from '@/components';
 import { Head } from '@/layout';
 import { ROUTE_ROOT } from '@/utils/constants/routes';
 
@@ -33,28 +32,18 @@ export const PageLogin: React.FC = () => {
     });
     const boxBoxShadow = useColorModeValue('md', 'md-dark');
 
-    const { mutate: login, isLoading } = useMutation(
-        async (email?: string) => {
-            const response = await signIn('email', {
-                email,
-                redirect: false,
-            });
+    const { mutate: login, isLoading } = useMutation(async (email?: string) => {
+        const response = await signIn('email', {
+            email,
+            redirect: false,
+        });
 
-            if (!response?.ok || response?.error) {
-                throw new Error(response?.error ?? 'Unknown error');
-            }
-
-            setIsEmailSent(true);
-        },
-        {
-            onSuccess: async (_, email) => {
-                console.log('success', { _, email });
-            },
-            onError: (error: Error) => {
-                console.log('error', { error });
-            },
+        if (!response?.ok || response?.error) {
+            throw new Error(response?.error ?? 'Unknown error');
         }
-    );
+
+        setIsEmailSent(true);
+    });
 
     if (status === 'authenticated') {
         router.push(ROUTE_ROOT);
@@ -83,9 +72,7 @@ export const PageLogin: React.FC = () => {
             >
                 <Stack spacing="8">
                     <Stack spacing="6" alignItems="center">
-                        <Box position="relative" w="20" h="20">
-                            <Image src="/assets/img/logo.png" layout="fill" />
-                        </Box>
+                        <Logo />
                         <Stack
                             spacing={{ base: '2', md: '3' }}
                             textAlign="center"

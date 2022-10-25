@@ -44,21 +44,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         return <LoadingScreen />;
     }
 
-    console.log(router.pathname, ROUTE_ACCOUNT);
-
-    // FIXME: Improve session?.user. If authenticated and no user, returns an error page
-    // if (
-    //     status === SESSION_AUTHENTICATED &&
-    //     session?.user &&
-    //     isMissingAtLeastOneMandatoryField(
-    //         session.user,
-    //         USER_MANDATORY_FIELDS
-    //     ) &&
-    //     router.pathname !== ROUTE_ACCOUNT
-    // ) else if{
-    //     router.push(ROUTE_ACCOUNT);
-    // }
-
     return <>{children}</>;
 };
 

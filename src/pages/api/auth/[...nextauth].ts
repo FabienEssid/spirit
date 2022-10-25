@@ -24,13 +24,6 @@ export const authOptions: NextAuthOptions = {
         signIn: '/login',
         newUser: '/app/me',
     },
-    // callbacks: {
-    //     authorized({ req, token }) {
-    //         console.log({ req, token });
-
-    //         return !!token;
-    //     },
-    // },
 };
 
 export default NextAuth(authOptions);
