@@ -16,7 +16,15 @@ export const LayoutHeader = () => {
     const { data: session } = useSession();
 
     return (
-        <Box as="section" position="fixed" top="0" left="0" right="0">
+        <Box
+            as="section"
+            position="fixed"
+            top="0"
+            left="0"
+            right="0"
+            zIndex="banner"
+            backgroundColor="white"
+        >
             <Box
                 as="nav"
                 bg="bg-surface"

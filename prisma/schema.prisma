@@ -96,6 +96,10 @@ model Wine {
   isFavorite         Boolean
   user               User                          @relation(fields: [userId], references: [id])
   userId             String
+  // TODO: Rating sur 10
+  // TODO: Voir pour le isFavorite, peut-être un isPinned
+  // TODO: Il faudra aussi permettre d'ajouter les informations dans plusieurs langues
+  // TODO: Ce que je vais faire dans un premier temps, c'est ajouter un bloc de texte libre pour ajouter des infos
 }
 
 model WineMedia {

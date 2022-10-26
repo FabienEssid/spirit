@@ -1,6 +1,8 @@
 import { Box, BoxProps } from '@chakra-ui/react';
 
-export const Card: React.FC<BoxProps> = (props) => {
+export type CardType = BoxProps;
+
+export const Card: React.FC<CardType> = (props) => {
     return (
         <Box
             boxShadow="md"
