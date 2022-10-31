@@ -24,16 +24,40 @@ export default async function handler(
 const getWines = async (
     request: NextApiRequest,
     response: NextApiResponse<
-        [
-            totalItems: number,
-            wines: (Wine & { medias: (WineMedia & { media: Media })[] })[]
-        ]
+        | [
+              totalItems: number,
+              wines: (Wine & { medias: (WineMedia & { media: Media })[] })[]
+          ]
+        | string // TODO: Fix this
     >
 ) => {
     const {
         pageSize = PAGE_SIZE,
         page = 1,
     }: Partial<{ pageSize: number; page: number }> = request.query;
+
+    const session = await unstable_getServerSession(
+        request,
+        response,
+        authOptions
+    );
+
+    if (!session) {
+        return response.status(403).json(FORBIDDEN);
+    }
+
+    const user = await db.user.findUnique({
+        where: {
+            email: session?.user?.email || undefined,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!user) {
+        return response.status(403).json(FORBIDDEN);
+    }
 
     const parsedPage = parseInt(`${page}`);
     const parsedPageSize = parseInt(`${pageSize}`);
@@ -49,6 +73,9 @@ const getWines = async (
                         media: true,
                     },
                 },
+            },
+            where: {
+                userId: user.id,
             },
         }),
     ]);
