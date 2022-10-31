@@ -1,10 +1,10 @@
-import { Box, BoxProps } from '@chakra-ui/react';
+import { Flex, FlexProps } from '@chakra-ui/react';
 
-export type CardType = BoxProps;
+export type CardType = FlexProps;
 
 export const Card: React.FC<CardType> = (props) => {
     return (
-        <Box
+        <Flex
             boxShadow="md"
             p="4"
             backgroundColor="white"

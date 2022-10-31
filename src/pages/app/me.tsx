@@ -12,10 +12,7 @@ import {
     VStack,
 } from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
-import {
-    ArrowRightOnRectangleIcon,
-    UserIcon,
-} from '@heroicons/react/24/outline';
+import { UserIcon } from '@heroicons/react/24/outline';
 import { User } from '@prisma/client';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -33,11 +30,11 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
 
     const subNavigation = [
         { name: 'Account', value: 'account', icon: UserIcon },
-        {
-            name: 'Sign out',
-            value: 'sign-out',
-            icon: ArrowRightOnRectangleIcon,
-        },
+        // {
+        //     name: 'Sign out',
+        //     value: 'sign-out',
+        //     icon: ArrowRightOnRectangleIcon,
+        // },
     ];
 
     const { mutate, isLoading } = useMutation(
@@ -70,6 +67,7 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
                     isFitted
                 >
                     <TabList
+                        display={{ base: 'none', md: 'flex' }}
                         w={{ base: 'full', md: '48' }}
                         minW={{ base: 'full', md: '48' }}
                         height="fit-content"
@@ -106,7 +104,7 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
                                     onValidSubmit={handleValidSubmit}
                                 >
                                     <Heading as="h2" fontSize="lg">
-                                        My account
+                                        Account
                                     </Heading>
                                     <VStack
                                         alignItems="flex-start"
