@@ -2,11 +2,14 @@ import React from 'react';
 
 import {
     Avatar,
+    Box,
     Button,
     Flex,
     HStack,
     Heading,
     Icon,
+    LinkBox,
+    LinkOverlay,
     Menu,
     MenuButton,
     MenuItem,
@@ -15,6 +18,7 @@ import {
     useBreakpointValue,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import NextLink from 'next/link';
 
 import { Loading } from '@/components';
 import {
@@ -34,6 +38,7 @@ import {
 } from '@/components/_StartUIPagination';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { useGetWines } from '@/services/wines';
+import { ROUTE_WINES } from '@/utils/constants/routes';
 import { PAGE_SIZE } from '@/utils/constants/wine';
 
 export const PageWines = () => {
@@ -111,68 +116,92 @@ export const PageWines = () => {
                     {isFetching ? (
                         <Loading variant="full" containerProps={{ flex: 1 }} />
                     ) : (
-                        (wines || []).map((wine) =>
-                            isOnResponsiveMode ? (
-                                <StartUIDataListRow key={wine.id}>
-                                    <StartUIDataListCell colName="wine">
-                                        <HStack spacing={2} alignItems="center">
+                        (wines || []).map((wine) => (
+                            <Box key={wine.id}>
+                                {isOnResponsiveMode ? (
+                                    <StartUIDataListRow as={LinkBox}>
+                                        <StartUIDataListCell colName="wine">
+                                            <NextLink
+                                                href={`${ROUTE_WINES}/${wine.id}?isReadOnly=true`}
+                                                passHref
+                                            >
+                                                <LinkOverlay>
+                                                    <HStack
+                                                        spacing={2}
+                                                        alignItems="center"
+                                                    >
+                                                        <Avatar
+                                                            size="sm"
+                                                            src={
+                                                                wine.medias?.[0]
+                                                                    ?.media?.url
+                                                            }
+                                                            name={wine.name}
+                                                        />
+                                                        <Text
+                                                            noOfLines={1}
+                                                            lineHeight="1"
+                                                            fontSize="sm"
+                                                        >
+                                                            {wine.name}
+                                                        </Text>
+                                                    </HStack>
+                                                    <Text
+                                                        ml="10"
+                                                        noOfLines={2}
+                                                        fontSize="xs"
+                                                    >
+                                                        {wine.description}
+                                                    </Text>
+                                                </LinkOverlay>
+                                            </NextLink>
+                                        </StartUIDataListCell>
+                                    </StartUIDataListRow>
+                                ) : (
+                                    <StartUIDataListRow as={LinkBox}>
+                                        <StartUIDataListCell colName="image">
                                             <Avatar
-                                                size="sm"
                                                 src={
                                                     wine.medias?.[0]?.media?.url
                                                 }
                                                 name={wine.name}
                                             />
-                                            <Text
-                                                noOfLines={1}
-                                                lineHeight="1"
-                                                fontSize="sm"
-                                            >
-                                                {wine.name}
+                                        </StartUIDataListCell>
+                                        <StartUIDataListCell colName="name">
+                                            <Box minWidth="0">
+                                                <Text
+                                                    noOfLines={2}
+                                                    fontWeight={{
+                                                        base: '600',
+                                                        md: '400',
+                                                    }}
+                                                >
+                                                    <NextLink
+                                                        href={`${ROUTE_WINES}/${wine.id}?isReadOnly=true`}
+                                                        passHref
+                                                    >
+                                                        <LinkOverlay>
+                                                            {wine.name}
+                                                        </LinkOverlay>
+                                                    </NextLink>
+                                                </Text>
+                                            </Box>
+                                        </StartUIDataListCell>
+                                        <StartUIDataListCell colName="description">
+                                            <Text noOfLines={2}>
+                                                {wine.description}
                                             </Text>
-                                        </HStack>
-                                        <Text
-                                            ml="10"
-                                            noOfLines={2}
-                                            fontSize="xs"
+                                        </StartUIDataListCell>
+                                        <StartUIDataListCell
+                                            colName="rating"
+                                            alignItems="flex-end"
                                         >
-                                            {wine.description}
-                                        </Text>
-                                    </StartUIDataListCell>
-                                </StartUIDataListRow>
-                            ) : (
-                                <StartUIDataListRow key={wine.id}>
-                                    <StartUIDataListCell colName="image">
-                                        <Avatar
-                                            src={wine.medias?.[0]?.media?.url}
-                                            name={wine.name}
-                                        />
-                                    </StartUIDataListCell>
-                                    <StartUIDataListCell colName="name">
-                                        <Text
-                                            noOfLines={2}
-                                            fontWeight={{
-                                                base: '600',
-                                                md: '400',
-                                            }}
-                                        >
-                                            {wine.name}
-                                        </Text>
-                                    </StartUIDataListCell>
-                                    <StartUIDataListCell colName="description">
-                                        <Text noOfLines={2}>
-                                            {wine.description}
-                                        </Text>
-                                    </StartUIDataListCell>
-                                    <StartUIDataListCell
-                                        colName="rating"
-                                        alignItems="flex-end"
-                                    >
-                                        {wine.rating}/10
-                                    </StartUIDataListCell>
-                                </StartUIDataListRow>
-                            )
-                        )
+                                            {wine.rating}/10
+                                        </StartUIDataListCell>
+                                    </StartUIDataListRow>
+                                )}
+                            </Box>
+                        ))
                     )}
                     {!isOnResponsiveMode ? (
                         <StartUIDataListFooter>

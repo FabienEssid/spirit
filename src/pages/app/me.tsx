@@ -179,7 +179,7 @@ export const getServerSideProps = async (
     );
     const { user: userToDisplay } = result || { user: undefined };
 
-    if (!userToDisplay) return { props: { user: undefined } };
+    if (!userToDisplay) return { props: { user: null } };
 
     const user = await db.user.findUnique({
         where: {
@@ -191,6 +191,8 @@ export const getServerSideProps = async (
             email: true,
         },
     });
+
+    if (!user) return { props: { user: null } };
 
     return { props: { user } };
 };

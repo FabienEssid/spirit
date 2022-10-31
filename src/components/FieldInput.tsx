@@ -16,7 +16,7 @@ export const FieldInput: React.FC<
     const { value, setValue, errorMessage, isSubmitted, isValid } =
         useField(props);
 
-    const { defaultValue, required, type, ...otherProps } = props;
+    const { defaultValue, required, type, isDisabled, ...otherProps } = props;
 
     const handleChange = (e: any) => {
         setValue(e.target.value);
@@ -26,6 +26,7 @@ export const FieldInput: React.FC<
         <FormControl
             isRequired={!!props.required}
             isInvalid={isSubmitted && !isValid}
+            isDisabled={isDisabled}
         >
             <FormLabel fontSize="sm" htmlFor={props.name}>
                 {props.label}

@@ -1,23 +1,18 @@
-import { Button, Heading, VStack } from '@chakra-ui/react';
+import { Heading, VStack } from '@chakra-ui/react';
 import { Formiz } from '@formiz/core';
+import { GetServerSidePropsContext } from 'next';
+import { useRouter } from 'next/router';
 
 import { Card, FieldInput, FieldRadio, FieldSlider } from '@/components';
+import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
-import { useAddWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
 
-export const PageHome = () => {
-    const { mutate } = useAddWine();
+export const PageWineDetails = ({ wine }: { wine: any }) => {
+    const router = useRouter();
+    const { query } = router;
 
-    const handleValidSubmit = (values: any) => {
-        const { isFavorite, ...otherValues } = values;
-        const wineToCreate = {
-            ...otherValues,
-            isFavorite: isFavorite === TRUE,
-        };
-
-        mutate(wineToCreate);
-    };
+    const isReadOnly = !!query?.isReadOnly;
 
     return (
         <Layout>
@@ -25,19 +20,22 @@ export const PageHome = () => {
             <LayoutBody>
                 <Card flexDirection="column">
                     <Heading as="h2" size="sm">
-                        Add a wine
+                        {isReadOnly ? 'Details of your wine' : 'Edit a wine'}
                     </Heading>
-                    <Formiz autoForm onValidSubmit={handleValidSubmit}>
+                    <Formiz autoForm>
                         <VStack mt="4" spacing="4" alignItems="stretch">
                             <FieldInput
                                 name="name"
                                 label="Name"
-                                required="The name is required"
+                                defaultValue={wine.name}
+                                isDisabled={isReadOnly}
                             />
                             <FieldInput
                                 type="textarea"
                                 name="description"
                                 label="Description"
+                                defaultValue={wine.description}
+                                isDisabled={isReadOnly}
                             />
                             <FieldSlider
                                 name="rating"
@@ -63,7 +61,8 @@ export const PageHome = () => {
                                     { value: 9, label: '9' },
                                     { value: 10, label: '10' },
                                 ]}
-                                defaultValue={5}
+                                defaultValue={wine.rating}
+                                isDisabled={isReadOnly}
                             />
                             <FieldRadio
                                 name="isFavorite"
@@ -75,12 +74,9 @@ export const PageHome = () => {
                                     { value: TRUE, label: 'Yes' },
                                     { value: FALSE, label: 'No' },
                                 ]}
-                                defaultValue={FALSE}
+                                defaultValue={wine.isFavorite ? TRUE : FALSE}
+                                isDisabled={isReadOnly}
                             />
-
-                            <Button type="submit" colorScheme="primary">
-                                Add
-                            </Button>
                         </VStack>
                     </Formiz>
                 </Card>
@@ -89,4 +85,20 @@ export const PageHome = () => {
     );
 };
 
-export default PageHome;
+export const getServerSideProps = async (
+    context: GetServerSidePropsContext<{ wineId: string }>
+) => {
+    const { wineId } = context.params || { wineId: undefined };
+    const result = await db.wine.findFirst({
+        where: {
+            id: wineId,
+        },
+    });
+    const wine = result || undefined;
+
+    if (!wine) return { props: { wine: null } };
+
+    return { props: { wine } };
+};
+
+export default PageWineDetails;
