@@ -7,24 +7,32 @@ import {
     LinkOverlayProps,
 } from '@chakra-ui/react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 
 export type LinkProps = {
     buttonProps?: LinkOverlayProps & ButtonProps;
+    isCurrentLocationProps?: LinkOverlayProps & ButtonProps;
     children: ReactNode;
 };
 
 export const Link: React.FC<NextLinkProps & LinkProps> = ({
     buttonProps,
+    isCurrentLocationProps,
     children,
+    href,
     ...props
 }) => {
+    const router = useRouter();
+    const { pathname } = router;
+    const isCurrentLocation = pathname === href;
+
     return (
-        <NextLink passHref {...props}>
+        <NextLink passHref href={href} {...props}>
             <Button
-                _hover={{ textDecoration: 'none' }}
                 as={ChakraLink}
+                variant={isCurrentLocation ? 'solid' : 'ghost'}
                 {...buttonProps}
-                colorScheme="primary"
+                {...(isCurrentLocation ? isCurrentLocationProps : {})}
             >
                 {children}
             </Button>
