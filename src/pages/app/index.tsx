@@ -1,13 +1,41 @@
 import { Button, Heading, VStack } from '@chakra-ui/react';
-import { Formiz } from '@formiz/core';
+import { Formiz, useForm } from '@formiz/core';
 
-import { Card, FieldInput, FieldRadio, FieldSlider } from '@/components';
+import {
+    Card,
+    FieldInput,
+    FieldRadio,
+    FieldSlider,
+    Loading,
+    useToastError,
+    useToastSuccess,
+} from '@/components';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { useAddWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
 
 export const PageHome = () => {
-    const { mutate } = useAddWine();
+    const toastSuccess = useToastSuccess();
+    const toastError = useToastError();
+
+    const form = useForm();
+    const { mutate, isLoading } = useAddWine({
+        onSuccess: () => {
+            form.reset();
+            toastSuccess({
+                title: 'Wine added',
+                description: 'Wine successfully added',
+            });
+        },
+        onError: (error) => {
+            toastError({
+                title: 'Error',
+                description: `An error occurred. Please try again later. The error is : ${
+                    error?.response?.data || 'unknown'
+                }`,
+            });
+        },
+    });
 
     const handleValidSubmit = (values: any) => {
         const { isFavorite, ...otherValues } = values;
@@ -19,6 +47,9 @@ export const PageHome = () => {
         mutate(wineToCreate);
     };
 
+    const shouldDisableSubmitButton =
+        (form.isSubmitted && !form.isValid) || isLoading;
+
     return (
         <Layout>
             <LayoutHeader />
@@ -27,7 +58,11 @@ export const PageHome = () => {
                     <Heading as="h2" size="sm">
                         Add a wine
                     </Heading>
-                    <Formiz autoForm onValidSubmit={handleValidSubmit}>
+                    <Formiz
+                        autoForm
+                        onValidSubmit={handleValidSubmit}
+                        connect={form}
+                    >
                         <VStack mt="4" spacing="4" alignItems="stretch">
                             <FieldInput
                                 name="name"
@@ -63,7 +98,6 @@ export const PageHome = () => {
                                     { value: 9, label: '9' },
                                     { value: 10, label: '10' },
                                 ]}
-                                defaultValue={5}
                             />
                             <FieldRadio
                                 name="isFavorite"
@@ -78,7 +112,12 @@ export const PageHome = () => {
                                 defaultValue={FALSE}
                             />
 
-                            <Button type="submit" colorScheme="primary">
+                            <Button
+                                type="submit"
+                                colorScheme="primary"
+                                isDisabled={shouldDisableSubmitButton}
+                            >
+                                {isLoading && <Loading size="sm" mr="2" />}
                                 Add
                             </Button>
                         </VStack>

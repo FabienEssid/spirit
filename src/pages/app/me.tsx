@@ -19,13 +19,22 @@ import axios from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
-import { Card, FieldInput, Link, Loading } from '@/components';
+import {
+    Card,
+    FieldInput,
+    Link,
+    Loading,
+    useToastError,
+    useToastSuccess,
+} from '@/components';
 import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { ROUTE_SIGN_OUT } from '@/utils/constants/routes';
 
 export const PageMe: React.FC<{ user: User }> = ({ user }) => {
+    const toastSuccess = useToastSuccess();
+    const toastError = useToastError();
     const form = useForm();
 
     const subNavigation = [
@@ -41,6 +50,22 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
         async ({ name }: { name: string }): Promise<void> => {
             const result = await axios.post(`/api/user/${user.id}`, { name });
             return result.data;
+        },
+        {
+            onSuccess: () => {
+                form.reset();
+                toastSuccess({
+                    title: 'Profile updated',
+                    description:
+                        'Your profile information have been successfully updated',
+                });
+            },
+            onError: (error) => {
+                toastError({
+                    title: 'Error',
+                    // description: `An error occurred. Please try again later. The error is : ${error?.response?.data || 'unknown'}`, // TODO: FIXME
+                });
+            },
         }
     );
 

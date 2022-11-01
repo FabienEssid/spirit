@@ -32,7 +32,6 @@ export const FieldSlider: React.FC<
     } = props;
 
     const handleChange = (value: number) => {
-        // console.log({ e });
         setValue(value);
     };
 

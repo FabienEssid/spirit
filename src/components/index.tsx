@@ -15,3 +15,10 @@ export { Link } from './Link';
 export { Loading } from './Loading';
 export { LoadingScreen } from './LoadingScreen';
 export { Logo } from './Logo';
+export {
+    useToastError,
+    useToastInfo,
+    useToastSuccess,
+    useToastWarning,
+    useToastLoading,
+} from './Toast';

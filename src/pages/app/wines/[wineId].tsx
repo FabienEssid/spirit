@@ -3,20 +3,46 @@ import { Formiz, useForm } from '@formiz/core';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 
-import { Card, FieldInput, FieldRadio, FieldSlider } from '@/components';
+import {
+    Card,
+    FieldInput,
+    FieldRadio,
+    FieldSlider,
+    Loading,
+    useToastError,
+    useToastSuccess,
+} from '@/components';
 import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { useUpdateWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
 
 export const PageWineDetails = ({ wine }: { wine: any }) => {
+    const toastSuccess = useToastSuccess();
+    const toastError = useToastError();
     const form = useForm();
     const router = useRouter();
     const { query } = router;
 
     const isReadOnly = !!query?.isReadOnly;
 
-    const { mutate, isLoading } = useUpdateWine(wine.id);
+    const { mutate, isLoading } = useUpdateWine(wine.id, {
+        onSuccess: () => {
+            form.reset();
+            toastSuccess({
+                title: 'Wine updated',
+                description: 'Wine successfully updated',
+            });
+        },
+        onError: (error) => {
+            toastError({
+                title: 'Error',
+                description: `An error occurred. Please try again later. The error is : ${
+                    error?.response?.data || 'unknown'
+                }`,
+            });
+        },
+    });
 
     const handleValidSubmit = (values: any) => {
         const { isFavorite, ...otherValues } = values;
@@ -104,6 +130,7 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                                     colorScheme="primary"
                                     isDisabled={shouldDisableSubmitButton}
                                 >
+                                    {isLoading && <Loading size="sm" mr="2" />}
                                     Update
                                 </Button>
                             )}
