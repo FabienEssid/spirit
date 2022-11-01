@@ -1,18 +1,35 @@
-import { Heading, VStack } from '@chakra-ui/react';
-import { Formiz } from '@formiz/core';
+import { Button, Heading, VStack } from '@chakra-ui/react';
+import { Formiz, useForm } from '@formiz/core';
 import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 
 import { Card, FieldInput, FieldRadio, FieldSlider } from '@/components';
 import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
+import { useUpdateWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
 
 export const PageWineDetails = ({ wine }: { wine: any }) => {
+    const form = useForm();
     const router = useRouter();
     const { query } = router;
 
     const isReadOnly = !!query?.isReadOnly;
+
+    const { mutate, isLoading } = useUpdateWine(wine.id);
+
+    const handleValidSubmit = (values: any) => {
+        const { isFavorite, ...otherValues } = values;
+        const wineToUpdate = {
+            ...otherValues,
+            isFavorite: isFavorite === TRUE,
+        };
+
+        mutate(wineToUpdate);
+    };
+
+    const shouldDisableSubmitButton =
+        (form.isSubmitted && !form.isValid) || isLoading;
 
     return (
         <Layout>
@@ -22,7 +39,11 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                     <Heading as="h2" size="sm">
                         {isReadOnly ? 'Details of your wine' : 'Edit a wine'}
                     </Heading>
-                    <Formiz autoForm>
+                    <Formiz
+                        connect={form}
+                        autoForm
+                        onValidSubmit={handleValidSubmit}
+                    >
                         <VStack mt="4" spacing="4" alignItems="stretch">
                             <FieldInput
                                 name="name"
@@ -77,6 +98,15 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                                 defaultValue={wine.isFavorite ? TRUE : FALSE}
                                 isDisabled={isReadOnly}
                             />
+                            {!isReadOnly && (
+                                <Button
+                                    type="submit"
+                                    colorScheme="primary"
+                                    isDisabled={shouldDisableSubmitButton}
+                                >
+                                    Update
+                                </Button>
+                            )}
                         </VStack>
                     </Formiz>
                 </Card>

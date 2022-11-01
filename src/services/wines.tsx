@@ -54,3 +54,18 @@ export const useAddWine = (
 ) => {
     return useMutation((payload) => axios.post('/api/wines', payload), config);
 };
+
+export const useUpdateWine = (
+    wineId: string,
+    config: UseMutationOptions<
+        Wine,
+        AxiosError,
+        Pick<Wine, 'name' | 'description' | 'rating' | 'isFavorite'>,
+        any
+    > = {}
+) => {
+    return useMutation(
+        (payload) => axios.post(`/api/wines/${wineId}`, payload),
+        config
+    );
+};
