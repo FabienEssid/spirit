@@ -15,7 +15,6 @@ import {
     MenuButton,
     MenuItem,
     MenuList,
-    MenuProps,
     Text,
     useBreakpointValue,
 } from '@chakra-ui/react';
@@ -25,9 +24,10 @@ import {
     PencilSquareIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
+import { useQueryClient } from '@tanstack/react-query';
 import NextLink from 'next/link';
 
-import { Loading } from '@/components';
+import { Loading, useToastError, useToastSuccess } from '@/components';
 import {
     DataList as StartUIDataList,
     DataListCell as StartUIDataListCell,
@@ -44,16 +44,39 @@ import {
     PaginationInfo as StartUIPaginationInfo,
 } from '@/components/_StartUIPagination';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
-import { useGetWines } from '@/services/wines';
+import { useDeleteWine, useGetWines } from '@/services/wines';
 import { ROUTE_WINES } from '@/utils/constants/routes';
 import { PAGE_SIZE } from '@/utils/constants/wine';
 
 export const PageWines = () => {
     const [page, setPage] = React.useState(1);
 
+    const queryClient = useQueryClient();
+
+    const toastSuccess = useToastSuccess();
+    const toastError = useToastError();
+
     const { wines, totalItems, isFetching } = useGetWines({
         page,
         pageSize: PAGE_SIZE,
+    });
+
+    const { mutate: deleteWine } = useDeleteWine({
+        onSuccess: () => {
+            toastSuccess({
+                title: 'Wine deleted',
+                description: 'Wine successfully deleted',
+            });
+            queryClient.invalidateQueries({ queryKey: ['/wines'] });
+        },
+        onError: (error) => {
+            toastError({
+                title: 'Error',
+                description: `An error occurred. Please try again later. The error is : ${
+                    error?.response?.data || 'unknown'
+                }`,
+            });
+        },
     });
 
     const isOnResponsiveMode = useBreakpointValue({ base: true, md: false });
@@ -96,7 +119,11 @@ export const PageWines = () => {
                         </Menu>
                     ) : null}
                 </Flex>
-                <StartUIDataList mt="4" boxShadow={{ base: 'none', md: 'md' }}>
+                <StartUIDataList
+                    mt="4"
+                    boxShadow={{ base: 'none', md: 'md' }}
+                    minHeight="sm"
+                >
                     <StartUIDataListHeader
                         display={{ base: 'none', md: 'flex' }}
                     >
@@ -206,7 +233,9 @@ export const PageWines = () => {
                                                     />
                                                 }
                                                 colorScheme="red"
-                                                isDisabled
+                                                onClick={() =>
+                                                    deleteWine(wine.id)
+                                                }
                                             />
                                         </StartUIDataListCell>
                                     </StartUIDataListRow>
@@ -252,7 +281,66 @@ export const PageWines = () => {
                                             {wine.rating}/10
                                         </StartUIDataListCell>
                                         <StartUIDataListCell colName="actions">
-                                            <WineActions wineId={wine.id} />
+                                            <Menu>
+                                                <MenuButton
+                                                    as={IconButton}
+                                                    aria-label="Options"
+                                                    icon={
+                                                        <Icon
+                                                            as={
+                                                                EllipsisVerticalIcon
+                                                            }
+                                                            fontSize="xl"
+                                                        />
+                                                    }
+                                                    variant="ghost"
+                                                    borderRadius="full"
+                                                />
+                                                <MenuList>
+                                                    <NextLink
+                                                        passHref
+                                                        href={`${ROUTE_WINES}/${wine.id}`}
+                                                    >
+                                                        <MenuItem
+                                                            icon={
+                                                                <Icon
+                                                                    as={
+                                                                        PencilSquareIcon
+                                                                    }
+                                                                    display="flex"
+                                                                    alignItems="center"
+                                                                    fontSize="lg"
+                                                                />
+                                                            }
+                                                        >
+                                                            Update
+                                                        </MenuItem>
+                                                    </NextLink>
+                                                    <MenuItem
+                                                        icon={
+                                                            <Icon
+                                                                as={TrashIcon}
+                                                                display="flex"
+                                                                alignItems="center"
+                                                                fontSize="lg"
+                                                                onClick={() =>
+                                                                    deleteWine(
+                                                                        wine.id
+                                                                    )
+                                                                }
+                                                            />
+                                                        }
+                                                        backgroundColor="red.50"
+                                                        color="red.500"
+                                                        _hover={{
+                                                            backgroundColor:
+                                                                'red.100',
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </MenuItem>
+                                                </MenuList>
+                                            </Menu>
                                         </StartUIDataListCell>
                                     </StartUIDataListRow>
                                 )}
@@ -279,43 +367,6 @@ export const PageWines = () => {
                 </StartUIDataList>
             </LayoutBody>
         </Layout>
-    );
-};
-
-type WineActionsType = {
-    wineId: string;
-};
-
-const WineActions: React.FC<Omit<MenuProps, 'children'> & WineActionsType> = ({
-    wineId,
-    ...props
-}) => {
-    return (
-        <Menu {...props}>
-            <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<Icon as={EllipsisVerticalIcon} fontSize="xl" />}
-                variant="ghost"
-                borderRadius="full"
-            />
-            <MenuList>
-                <NextLink passHref href={`${ROUTE_WINES}/${wineId}`}>
-                    <MenuItem
-                        icon={
-                            <Icon
-                                as={PencilSquareIcon}
-                                display="flex"
-                                alignItems="center"
-                                fontSize="lg"
-                            />
-                        }
-                    >
-                        Update
-                    </MenuItem>
-                </NextLink>
-            </MenuList>
-        </Menu>
     );
 };
 

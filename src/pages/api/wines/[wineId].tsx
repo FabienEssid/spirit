@@ -2,7 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
 import { db } from '@/db/prisma';
-import { BAD_REQUEST, FORBIDDEN } from '@/utils/constants/api';
+import {
+    BAD_REQUEST,
+    FORBIDDEN,
+    RESOURCE_DELETED,
+} from '@/utils/constants/api';
 
 import { authOptions } from '../auth/[...nextauth]';
 
@@ -12,6 +16,10 @@ export default async function handler(
 ) {
     if (request.method === 'POST') {
         return await updateWine(request, response);
+    }
+
+    if (request.method === 'DELETE') {
+        return await deleteWine(request, response);
     }
 }
 
@@ -71,4 +79,46 @@ const updateWine = async (
     });
 
     return response.status(201).json(updatedWine);
+};
+
+const deleteWine = async (
+    request: NextApiRequest,
+    response: NextApiResponse<any>
+) => {
+    const { wineId } = request.query;
+
+    if (!wineId) {
+        return response.status(400).json(BAD_REQUEST);
+    }
+
+    const session = await unstable_getServerSession(
+        request,
+        response,
+        authOptions
+    );
+
+    if (!session) {
+        return response.status(403).json(FORBIDDEN);
+    }
+
+    const user = await db.user.findUnique({
+        where: {
+            email: session?.user?.email || undefined,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!user) {
+        return response.status(403).json(FORBIDDEN);
+    }
+
+    await db.wine.delete({
+        where: {
+            id: `${wineId}`,
+        },
+    });
+
+    return response.status(201).json(RESOURCE_DELETED);
 };

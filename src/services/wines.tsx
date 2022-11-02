@@ -69,3 +69,12 @@ export const useUpdateWine = (
         config
     );
 };
+
+export const useDeleteWine = (
+    config: UseMutationOptions<Pick<Wine, 'id'>, AxiosError, any, any> = {}
+) => {
+    return useMutation(
+        (wineId) => axios.delete(`/api/wines/${wineId}`),
+        config
+    );
+};
