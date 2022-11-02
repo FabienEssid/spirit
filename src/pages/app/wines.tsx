@@ -8,16 +8,23 @@ import {
     HStack,
     Heading,
     Icon,
+    IconButton,
     LinkBox,
     LinkOverlay,
     Menu,
     MenuButton,
     MenuItem,
     MenuList,
+    MenuProps,
     Text,
     useBreakpointValue,
 } from '@chakra-ui/react';
-import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import {
+    ChevronDownIcon,
+    EllipsisVerticalIcon,
+    PencilSquareIcon,
+    TrashIcon,
+} from '@heroicons/react/24/outline';
 import NextLink from 'next/link';
 
 import { Loading } from '@/components';
@@ -56,8 +63,12 @@ export const PageWines = () => {
     return (
         <Layout>
             <LayoutHeader />
-            <LayoutBody px={{ base: 4, lg: 8 }}>
-                <Flex justifyContent="space-between" alignItems="center">
+            <LayoutBody px={{ base: 0, lg: 8 }}>
+                <Flex
+                    justifyContent="space-between"
+                    alignItems="center"
+                    px={{ base: 4, lg: 0 }}
+                >
                     <Heading as="h2" size="md">
                         Wines
                     </Heading>
@@ -85,12 +96,18 @@ export const PageWines = () => {
                         </Menu>
                     ) : null}
                 </Flex>
-                <StartUIDataList mt="4">
+                <StartUIDataList mt="4" boxShadow={{ base: 'none', md: 'md' }}>
                     <StartUIDataListHeader
                         display={{ base: 'none', md: 'flex' }}
                     >
                         {isOnResponsiveMode ? (
-                            <StartUIDataListCell colName="wine"></StartUIDataListCell>
+                            <>
+                                <StartUIDataListCell colName="wine" />
+                                <StartUIDataListCell
+                                    colName="actions"
+                                    colWidth="0.25"
+                                />
+                            </>
                         ) : (
                             <>
                                 <StartUIDataListCell
@@ -110,6 +127,10 @@ export const PageWines = () => {
                                 >
                                     Rating
                                 </StartUIDataListCell>
+                                <StartUIDataListCell
+                                    colName="actions"
+                                    colWidth="0.25"
+                                />
                             </>
                         )}
                     </StartUIDataListHeader>
@@ -146,15 +167,47 @@ export const PageWines = () => {
                                                             {wine.name}
                                                         </Text>
                                                     </HStack>
-                                                    <Text
-                                                        ml="10"
-                                                        noOfLines={2}
-                                                        fontSize="xs"
-                                                    >
-                                                        {wine.description}
-                                                    </Text>
                                                 </LinkOverlay>
                                             </NextLink>
+                                        </StartUIDataListCell>
+                                        <StartUIDataListCell
+                                            colName="actions"
+                                            flexDirection="row"
+                                        >
+                                            <NextLink
+                                                passHref
+                                                href={`${ROUTE_WINES}/${wine.id}`}
+                                            >
+                                                <IconButton
+                                                    aria-label="Update"
+                                                    variant="ghost"
+                                                    borderRadius="full"
+                                                    icon={
+                                                        <Icon
+                                                            as={
+                                                                PencilSquareIcon
+                                                            }
+                                                            display="flex"
+                                                            alignItems="center"
+                                                        />
+                                                    }
+                                                />
+                                            </NextLink>
+                                            <IconButton
+                                                aria-label="Delete"
+                                                variant="ghost"
+                                                borderRadius="full"
+                                                icon={
+                                                    <Icon
+                                                        as={TrashIcon}
+                                                        display="flex"
+                                                        alignItems="center"
+                                                        color="red.500"
+                                                    />
+                                                }
+                                                colorScheme="red"
+                                                isDisabled
+                                            />
                                         </StartUIDataListCell>
                                     </StartUIDataListRow>
                                 ) : (
@@ -198,6 +251,9 @@ export const PageWines = () => {
                                         >
                                             {wine.rating}/10
                                         </StartUIDataListCell>
+                                        <StartUIDataListCell colName="actions">
+                                            <WineActions wineId={wine.id} />
+                                        </StartUIDataListCell>
                                     </StartUIDataListRow>
                                 )}
                             </Box>
@@ -223,6 +279,43 @@ export const PageWines = () => {
                 </StartUIDataList>
             </LayoutBody>
         </Layout>
+    );
+};
+
+type WineActionsType = {
+    wineId: string;
+};
+
+const WineActions: React.FC<Omit<MenuProps, 'children'> & WineActionsType> = ({
+    wineId,
+    ...props
+}) => {
+    return (
+        <Menu {...props}>
+            <MenuButton
+                as={IconButton}
+                aria-label="Options"
+                icon={<Icon as={EllipsisVerticalIcon} fontSize="xl" />}
+                variant="ghost"
+                borderRadius="full"
+            />
+            <MenuList>
+                <NextLink passHref href={`${ROUTE_WINES}/${wineId}`}>
+                    <MenuItem
+                        icon={
+                            <Icon
+                                as={PencilSquareIcon}
+                                display="flex"
+                                alignItems="center"
+                                fontSize="lg"
+                            />
+                        }
+                    >
+                        Update
+                    </MenuItem>
+                </NextLink>
+            </MenuList>
+        </Menu>
     );
 };
 

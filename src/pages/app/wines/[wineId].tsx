@@ -1,6 +1,16 @@
-import { Button, Heading, VStack } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Flex,
+    Heading,
+    Icon,
+    IconButton,
+    VStack,
+} from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { GetServerSidePropsContext } from 'next';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
 import {
@@ -16,6 +26,7 @@ import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { useUpdateWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
+import { ROUTE_WINES } from '@/utils/constants/routes';
 
 export const PageWineDetails = ({ wine }: { wine: any }) => {
     const toastSuccess = useToastSuccess();
@@ -61,10 +72,30 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
         <Layout>
             <LayoutHeader />
             <LayoutBody>
-                <Card flexDirection="column">
-                    <Heading as="h2" size="sm">
-                        {isReadOnly ? 'Details of your wine' : 'Edit a wine'}
-                    </Heading>
+                <Card
+                    flexDirection="column"
+                    boxShadow={{ base: 'none', md: 'md' }}
+                >
+                    <Flex justifyContent="space-between" alignItems="center">
+                        <Heading as="h2" size="sm">
+                            {isReadOnly
+                                ? 'Details of your wine'
+                                : 'Edit a wine'}
+                        </Heading>
+                        {isReadOnly && (
+                            <NextLink
+                                passHref
+                                href={`${ROUTE_WINES}/${wine.id}`}
+                            >
+                                <IconButton
+                                    icon={<Icon as={PencilSquareIcon} />}
+                                    aria-label="Update"
+                                    size="sm"
+                                    colorScheme="primary"
+                                />
+                            </NextLink>
+                        )}
+                    </Flex>
                     <Formiz
                         connect={form}
                         autoForm
@@ -74,6 +105,7 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                             <FieldInput
                                 name="name"
                                 label="Name"
+                                required="The name is required"
                                 defaultValue={wine.name}
                                 isDisabled={isReadOnly}
                             />
@@ -124,17 +156,28 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                                 defaultValue={wine.isFavorite ? TRUE : FALSE}
                                 isDisabled={isReadOnly}
                             />
-                            {!isReadOnly && (
+                        </VStack>
+                        {!isReadOnly && (
+                            <Box
+                                position="fixed"
+                                zIndex="docked"
+                                bottom="0"
+                                left="0"
+                                right="0"
+                                p="4"
+                                boxShadow="xs"
+                            >
                                 <Button
                                     type="submit"
                                     colorScheme="primary"
                                     isDisabled={shouldDisableSubmitButton}
+                                    width="full"
                                 >
                                     {isLoading && <Loading size="sm" mr="2" />}
                                     Update
                                 </Button>
-                            )}
-                        </VStack>
+                            </Box>
+                        )}
                     </Formiz>
                 </Card>
             </LayoutBody>

@@ -54,7 +54,10 @@ export const PageHome = () => {
         <Layout>
             <LayoutHeader />
             <LayoutBody>
-                <Card flexDirection="column">
+                <Card
+                    flexDirection="column"
+                    boxShadow={{ base: 'none', md: 'md' }}
+                >
                     <Heading as="h2" size="sm">
                         Add a wine
                     </Heading>
