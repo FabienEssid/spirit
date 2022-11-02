@@ -51,7 +51,7 @@ export const PageWines = () => {
 
     const isOnResponsiveMode = useBreakpointValue({ base: true, md: false });
 
-    const numberOfPages = Math.floor(totalItems / PAGE_SIZE);
+    const numberOfPages = Math.ceil(totalItems / PAGE_SIZE);
 
     return (
         <Layout>

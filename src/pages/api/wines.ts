@@ -63,7 +63,11 @@ const getWines = async (
     const parsedPageSize = parseInt(`${pageSize}`);
 
     const [totalItems, wines] = await db.$transaction([
-        db.wine.count(),
+        db.wine.count({
+            where: {
+                userId: user.id,
+            },
+        }),
         db.wine.findMany({
             skip: (parsedPage - 1) * parsedPageSize,
             take: parsedPageSize,
