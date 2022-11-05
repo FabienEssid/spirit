@@ -12,7 +12,7 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-enum MediaType {
+enum MediaType { // TODO: remplacer ça par le type mime
   IMAGE
   VIDEO
 }
@@ -20,7 +20,7 @@ enum MediaType {
 model Media {
   id         String      @id @default(cuid())
   type       MediaType
-  url        String      @db.Text
+  url        String      @db.Text // TODO: Remplacer ça, non pas par une URL, mais par un chemin d'accès à la ressource
   wineMedias WineMedia[]
   userMedias UserMedia[]
 }
