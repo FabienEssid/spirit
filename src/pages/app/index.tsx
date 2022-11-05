@@ -11,20 +11,12 @@ import {
     useToastSuccess,
 } from '@/components';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
-import { useDownloadImage, useUploadImage } from '@/services/aws';
 import { useAddWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
 
 export const PageHome = () => {
     const toastSuccess = useToastSuccess();
     const toastError = useToastError();
-
-    const { data: imageSrc } = useDownloadImage();
-
-    const { mutate: upload } = useUploadImage();
-    const handleUploadFile = async (e: any) => {
-        upload(e.target.files[0]);
-    };
 
     const form = useForm();
     const { mutate, isLoading } = useAddWine({
@@ -46,10 +38,10 @@ export const PageHome = () => {
     });
 
     const handleValidSubmit = (values: any) => {
-        const { isFavorite, ...otherValues } = values;
+        const { isPinned, ...otherValues } = values;
         const wineToCreate = {
             ...otherValues,
-            isFavorite: isFavorite === TRUE,
+            isPinned: isPinned === TRUE,
         };
 
         mutate(wineToCreate);
@@ -62,7 +54,6 @@ export const PageHome = () => {
         <Layout>
             <LayoutHeader />
             <LayoutBody>
-                {imageSrc && <img src={imageSrc} />}
                 <Card
                     flexDirection="column"
                     boxShadow={{ base: 'none', md: 'md' }}
@@ -76,12 +67,6 @@ export const PageHome = () => {
                         connect={form}
                     >
                         <VStack mt="4" spacing="4" alignItems="stretch">
-                            <FieldInput
-                                name="photo"
-                                label="Photo"
-                                type="file"
-                                onChange={handleUploadFile}
-                            />
                             <FieldInput
                                 name="name"
                                 label="Name"
@@ -118,8 +103,8 @@ export const PageHome = () => {
                                 ]}
                             />
                             <FieldRadio
-                                name="isFavorite"
-                                label="Is it one of your favorite ?"
+                                name="isPinned"
+                                label="Do you want to pin this wine ?"
                                 as={VStack}
                                 alignItems="flex-start"
                                 colorScheme="primary"

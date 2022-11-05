@@ -56,10 +56,10 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
     });
 
     const handleValidSubmit = (values: any) => {
-        const { isFavorite, ...otherValues } = values;
+        const { isPinned, ...otherValues } = values;
         const wineToUpdate = {
             ...otherValues,
-            isFavorite: isFavorite === TRUE,
+            isPinned: isPinned === TRUE,
         };
 
         mutate(wineToUpdate);
@@ -144,8 +144,8 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                                 isDisabled={isReadOnly}
                             />
                             <FieldRadio
-                                name="isFavorite"
-                                label="Is it one of your favorite ?"
+                                name="isPinned"
+                                label="Do you want to pin this wine ?"
                                 as={VStack}
                                 alignItems="flex-start"
                                 colorScheme="primary"
@@ -153,7 +153,7 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                                     { value: TRUE, label: 'Yes' },
                                     { value: FALSE, label: 'No' },
                                 ]}
-                                defaultValue={wine.isFavorite ? TRUE : FALSE}
+                                defaultValue={wine.isPinned ? TRUE : FALSE}
                                 isDisabled={isReadOnly}
                             />
                         </VStack>

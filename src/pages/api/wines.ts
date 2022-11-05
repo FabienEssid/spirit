@@ -1,4 +1,4 @@
-import { Media, Wine, WineMedia } from '@prisma/client';
+import { Media, Wine } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
@@ -24,11 +24,7 @@ export default async function handler(
 const getWines = async (
     request: NextApiRequest,
     response: NextApiResponse<
-        | [
-              totalItems: number,
-              wines: (Wine & { medias: (WineMedia & { media: Media })[] })[]
-          ]
-        | string // TODO: Fix this
+        [totalItems: number, wines: (Wine & { medias: Media[] })[]] | string // TODO: Fix this
     >
 ) => {
     const {
@@ -72,11 +68,7 @@ const getWines = async (
             skip: (parsedPage - 1) * parsedPageSize,
             take: parsedPageSize,
             include: {
-                medias: {
-                    include: {
-                        media: true,
-                    },
-                },
+                medias: true,
             },
             where: {
                 userId: user.id,

@@ -180,11 +180,11 @@ export const PageWines = () => {
                                                     >
                                                         <Avatar
                                                             size="sm"
-                                                            src={
-                                                                wine.medias?.[0]
-                                                                    ?.media?.url
+                                                            // TODO: Add src for avatar
+                                                            name={
+                                                                wine?.name ||
+                                                                '-'
                                                             }
-                                                            name={wine.name}
                                                         />
                                                         <Text
                                                             noOfLines={1}
@@ -243,10 +243,8 @@ export const PageWines = () => {
                                     <StartUIDataListRow as={LinkBox}>
                                         <StartUIDataListCell colName="image">
                                             <Avatar
-                                                src={
-                                                    wine.medias?.[0]?.media?.url
-                                                }
-                                                name={wine.name}
+                                                // TODO: Add src
+                                                name={wine?.name || '-'}
                                             />
                                         </StartUIDataListCell>
                                         <StartUIDataListCell colName="name">
