@@ -11,12 +11,20 @@ import {
     useToastSuccess,
 } from '@/components';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
+import { useDownloadImage, useUploadImage } from '@/services/aws';
 import { useAddWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
 
 export const PageHome = () => {
     const toastSuccess = useToastSuccess();
     const toastError = useToastError();
+
+    const { data: imageSrc } = useDownloadImage();
+
+    const { mutate: upload } = useUploadImage();
+    const handleUploadFile = async (e: any) => {
+        upload(e.target.files[0]);
+    };
 
     const form = useForm();
     const { mutate, isLoading } = useAddWine({
@@ -54,6 +62,7 @@ export const PageHome = () => {
         <Layout>
             <LayoutHeader />
             <LayoutBody>
+                {imageSrc && <img src={imageSrc} />}
                 <Card
                     flexDirection="column"
                     boxShadow={{ base: 'none', md: 'md' }}
@@ -67,6 +76,12 @@ export const PageHome = () => {
                         connect={form}
                     >
                         <VStack mt="4" spacing="4" alignItems="stretch">
+                            <FieldInput
+                                name="photo"
+                                label="Photo"
+                                type="file"
+                                onChange={handleUploadFile}
+                            />
                             <FieldInput
                                 name="name"
                                 label="Name"

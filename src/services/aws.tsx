@@ -66,3 +66,21 @@ export const useUploadImage = () => {
 
     return result;
 };
+
+export const useDownloadImage = () => {
+    const result = useQuery(
+        ['/aws/download'],
+        (): Promise<any> =>
+            axios.get('/api/aws/download', {
+                responseType: 'blob',
+            })
+    );
+
+    const blob =
+        result.data && result.data.data
+            ? new Blob([result.data.data], { type: 'image/png' })
+            : null;
+    const image = blob ? URL.createObjectURL(blob) : null;
+
+    return { ...result, data: image };
+};
