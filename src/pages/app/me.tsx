@@ -48,7 +48,7 @@ export const PageMe: React.FC<{ user: User }> = ({ user }) => {
 
     const { mutate, isLoading } = useMutation(
         async ({ name }: { name: string }): Promise<void> => {
-            const result = await axios.post(`/api/user/${user.id}`, { name });
+            const result = await axios.post(`/api/users/${user.id}`, { name });
             return result.data;
         },
         {
