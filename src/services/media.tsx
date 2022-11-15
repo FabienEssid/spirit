@@ -1,21 +1,37 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-export const useUploadImage = () => {
-    const result = useMutation(
-        async (file: Blob) =>
-            await axios.post(
-                '/api/media/upload',
-                { file: file },
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            )
-    );
+export const getUploadMediaURL = ({
+    fileName,
+    fileType,
+}: {
+    fileName: string;
+    fileType: string;
+}) => axios.get('/api/media/upload', { params: { fileName, fileType } });
 
-    return result;
+export const uploadMedia = async ({
+    url,
+    payload,
+    mimeType,
+    path,
+    originalFileName,
+}: {
+    url: string;
+    payload: FormData;
+    mimeType: string;
+    path: string;
+    originalFileName?: string;
+}) => {
+    try {
+        await axios.post(url, payload);
+        return await axios.post('/api/media', {
+            mimeType,
+            path,
+            originalFileName,
+        });
+    } catch (e) {
+        return null;
+    }
 };
 
 export const useDownloadImage = ({ mediaId }: { mediaId: string }) => {

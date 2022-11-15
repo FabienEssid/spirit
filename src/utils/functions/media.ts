@@ -1,5 +1,10 @@
 import { MediaMimeType } from '@prisma/client';
 
+import {
+    getUploadMediaURL,
+    uploadMedia as uploadMediaInDataBase,
+} from '@/services/media';
+
 import { DATABASE_MIME_TYPES_ENUM, MIME_TYPES } from '../constants/media';
 
 export const getDatabaseMimeTypeEnumFromMimeType = (
@@ -28,4 +33,31 @@ export const getMimeTypeFromDatabaseMimeTypeEnum = (type: string) => {
     }
 
     return MIME_TYPES[mimeType];
+};
+
+export const uploadMedia = async (file: Blob) => {
+    if (!file) return null;
+
+    const fileName = file?.name;
+    const fileType = file?.type;
+
+    if (!fileName || !fileType) {
+        return;
+    }
+
+    const { data } = await getUploadMediaURL({ fileName, fileType });
+    const { url, fields, path, originalFileName } = data;
+    const formData = new FormData();
+
+    Object.entries({ ...fields, file }).forEach(([key, value]) => {
+        formData.append(key, value as string);
+    });
+
+    return await uploadMediaInDataBase({
+        url,
+        mimeType: fileType,
+        path,
+        originalFileName,
+        payload: formData,
+    });
 };
