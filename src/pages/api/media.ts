@@ -1,3 +1,4 @@
+import { Media } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { db } from '@/db/prisma';
@@ -12,12 +13,19 @@ export default async function handler(
         return response.status(400).json(FORBIDDEN);
     }
 
-    const { mimeType, path, originalFileName } = request.body;
+    const {
+        mimeType,
+        path,
+        originalFileName,
+    }: { mimeType: string; path: string; originalFileName: string } =
+        request.body;
     if (!mimeType || !path || !originalFileName) {
         return response.status(400).json(BAD_REQUEST);
     }
 
-    const uploadedMedia = await db.media.create({
+    const uploadedMedia = await db.media.create<{
+        data: Pick<Media, 'mimeType' | 'path' | 'originalFileName'>;
+    }>({
         data: {
             mimeType: getDatabaseMimeTypeEnumFromMimeType(mimeType),
             path,

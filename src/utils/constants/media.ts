@@ -1,3 +1,5 @@
+import { MediaMimeType } from '@prisma/client';
+
 export const MIME_TYPES: { [key: string]: string } = {
     APPLICATION_OCTET_STREAM: 'application/octet-stream',
     IMAGE_BMP: 'image/bmp',
@@ -7,7 +9,9 @@ export const MIME_TYPES: { [key: string]: string } = {
     IMAGE_WEBP: 'image/webp',
 };
 
-export const DATABASE_MIME_TYPES_ENUM: { [key: string]: string } = {
+export const DATABASE_MIME_TYPES_ENUM: {
+    [key: string]: MediaMimeType;
+} = {
     'application/octet-stream': 'APPLICATION_OCTET_STREAM',
     'image/bmp': 'IMAGE_BMP',
     'image/gif': 'IMAGE_GIF',
