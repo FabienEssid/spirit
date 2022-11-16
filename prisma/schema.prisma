@@ -12,17 +12,25 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-enum MediaType {
-  IMAGE
-  VIDEO
+// based on https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+enum MediaMimeType {
+  APPLICATION_OCTET_STREAM
+  IMAGE_BMP
+  IMAGE_GIF
+  IMAGE_JPEG
+  IMAGE_PNG
+  IMAGE_WEBP
 }
 
 model Media {
-  id         String      @id @default(cuid())
-  type       MediaType
-  url        String      @db.Text
-  wineMedias WineMedia[]
-  userMedias UserMedia[]
+  id               String        @id @default(cuid())
+  mimeType         MediaMimeType
+  path             String        @db.Text
+  originalFileName String?
+  user             User?         @relation(fields: [userId], references: [id])
+  userId           String?
+  wine             Wine?         @relation(fields: [wineId], references: [id])
+  wineId           String?
 }
 
 model Account {
@@ -57,19 +65,10 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
-  image         UserMedia?
+  medias        Media[]
   accounts      Account[]
   sessions      Session[]
   wines         Wine[]
-}
-
-model UserMedia {
-  media Media    @relation(fields: [mediaId], references: [id])
-  mediaId String
-  user User?     @relation(fields: [userId], references: [id])
-  userId String  @unique
-
-  @@id([mediaId, userId])
 }
 
 model VerificationToken {
@@ -87,28 +86,19 @@ model WineCharacteristic {
 }
 
 model Wine {
-  id                 String                        @id @default(cuid())
-  name               String
-  description        String?                       @db.Text
+  id                  String                        @id @default(cuid())
+  name                String?
+  description         String?                       @db.Text
   wineCharacteristics WineCharacteristicsOnWines[]
-  medias             WineMedia[]
-  rating             Int?
-  isFavorite         Boolean
-  user               User                          @relation(fields: [userId], references: [id])
-  userId             String
-  // TODO: Rating sur 10
-  // TODO: Voir pour le isFavorite, peut-être un isPinned
+  medias              Media[]
+  rating              Int?
+  isPinned            Boolean
+  country             String?                       @db.VarChar(2)
+  region              String?                       @db.TinyText
+  additionalInformation String?                     @db.Text
+  user                User                          @relation(fields: [userId], references: [id])
+  userId              String
   // TODO: Il faudra aussi permettre d'ajouter les informations dans plusieurs langues
-  // TODO: Ce que je vais faire dans un premier temps, c'est ajouter un bloc de texte libre pour ajouter des infos
-}
-
-model WineMedia {
-  media   Media  @relation(fields: [mediaId], references: [id])
-  mediaId String
-  wine    Wine   @relation(fields: [wineId], references: [id])
-  wineId  String
-
-  @@id([mediaId, wineId])
 }
 
 model WineCharacteristicsOnWines {

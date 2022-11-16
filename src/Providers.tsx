@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 
-import { ChakraProvider, Container } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-import { Loading, LoadingScreen } from '@/components';
+import { LoadingScreen } from '@/components';
 import { applicationTheme } from '@/theme';
 import {
     SESSION_AUTHENTICATED,

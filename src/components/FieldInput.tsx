@@ -37,6 +37,13 @@ export const FieldInput: React.FC<
                     value={value || ''}
                     {...otherProps}
                 />
+            ) : type === 'file' ? (
+                <Input
+                    type="file"
+                    onChange={handleChange}
+                    value={value || ''}
+                    {...otherProps}
+                />
             ) : (
                 <Input
                     type="text"

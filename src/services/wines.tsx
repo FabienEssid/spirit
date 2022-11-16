@@ -1,4 +1,4 @@
-import { Media, Wine, WineMedia } from '@prisma/client';
+import { Media, Wine } from '@prisma/client';
 import {
     UseMutationOptions,
     UseQueryOptions,
@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 
-type WineList = (Wine & { medias: (WineMedia & { media: Media })[] })[];
+type WineList = (Wine & { medias: Media[] })[];
 
 export const useGetWines = (
     {
@@ -48,7 +48,7 @@ export const useAddWine = (
     config: UseMutationOptions<
         Wine,
         AxiosError,
-        Pick<Wine, 'name' | 'description' | 'rating' | 'isFavorite'>,
+        Pick<Wine, 'name' | 'description' | 'rating' | 'isPinned'>,
         any
     > = {}
 ) => {
@@ -60,7 +60,7 @@ export const useUpdateWine = (
     config: UseMutationOptions<
         Wine,
         AxiosError,
-        Pick<Wine, 'name' | 'description' | 'rating' | 'isFavorite'>,
+        Pick<Wine, 'name' | 'description' | 'rating' | 'isPinned'>,
         any
     > = {}
 ) => {
