@@ -15,7 +15,6 @@ import {
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { useAddWine } from '@/services/wines';
 import { FALSE, TRUE } from '@/utils/constants/global';
-import { uploadMedia } from '@/utils/functions/media';
 
 export const PageHome = () => {
     const toastSuccess = useToastSuccess();
@@ -50,13 +49,6 @@ export const PageHome = () => {
         mutate(wineToCreate);
     };
 
-    const handleFileUploadChange = async (e: any) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        await uploadMedia(file);
-    };
-
     const shouldDisableSubmitButton =
         (form.isSubmitted && !form.isValid) || isLoading;
 
@@ -77,12 +69,6 @@ export const PageHome = () => {
                         connect={form}
                     >
                         <VStack mt="4" spacing="4" alignItems="stretch">
-                            <FieldInput
-                                type="file"
-                                name="media"
-                                label="Media"
-                                onChange={handleFileUploadChange}
-                            />
                             <FieldInput
                                 name="name"
                                 label="Name"

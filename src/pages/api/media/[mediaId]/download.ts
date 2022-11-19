@@ -1,4 +1,5 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { db } from '@/db/prisma';
@@ -49,15 +50,21 @@ export default async function handler(
     });
 
     try {
-        const { Body: data } = await s3Client.send(
+        const signedUrl = await getSignedUrl(
+            // @ts-ignore
+            // FIXME
+            s3Client,
             new GetObjectCommand({
                 Bucket: bucketName,
                 Key: key,
                 ResponseContentType: mimeType,
-            })
+            }),
+            {
+                expiresIn: 3600,
+            }
         );
 
-        return response.status(200).send(data);
+        return response.status(200).send(signedUrl);
     } catch (e) {
         console.error('error', e);
         return response.status(400).json(e);
