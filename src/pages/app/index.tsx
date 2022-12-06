@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Heading, VStack } from '@chakra-ui/react';
+import { Button, HStack, Heading, VStack } from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
 
 import {
@@ -8,6 +8,8 @@ import {
     FieldInput,
     FieldRadio,
     FieldSlider,
+    FieldUpload,
+    FieldUploadGroup,
     Loading,
     useToastError,
     useToastSuccess,
@@ -79,6 +81,13 @@ export const PageHome = () => {
                                 name="description"
                                 label="Description"
                             />
+                            <FieldUploadGroup label="Media">
+                                <HStack spacing="2">
+                                    <FieldUpload name="media[0]" />
+                                    <FieldUpload name="media[1]" />
+                                    <FieldUpload name="media[2]" />
+                                </HStack>
+                            </FieldUploadGroup>
                             <FieldSlider
                                 name="rating"
                                 label="Rating"
