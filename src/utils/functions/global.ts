@@ -11,3 +11,11 @@ export const isMissingAtLeastOneMandatoryField = (
             (obj[key] === null || obj[key] === undefined)
     );
 };
+
+export const isAppRunningOnMobile = (): boolean => {
+    const pwaRenderModes = ['fullscreen', 'standalone', 'minimal-ui'];
+    return pwaRenderModes.some(
+        (pwaRenderMode) =>
+            window.matchMedia('(display-mode: ' + pwaRenderMode + ')').matches
+    );
+};

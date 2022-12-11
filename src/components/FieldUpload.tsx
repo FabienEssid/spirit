@@ -23,6 +23,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
 import { useDownloadMedia, useUploadMedia } from '@/services/media';
+import { isAppRunningOnMobile } from '@/utils/functions/global';
 
 type FieldUploadGroupContextType = {
     isWrappedByGroup: boolean;
@@ -98,6 +99,17 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
         }
     };
 
+    const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        if (event.dataTransfer.files?.[0]) {
+            uploadMedia({ media: event.dataTransfer.files[0] });
+        }
+    };
+
+    const handleFileDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+    };
+
     return (
         <FormControl
             isRequired={!!props.required}
@@ -109,7 +121,11 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
                     {props.label}
                 </FormLabel>
             )}
-            <Box position="relative">
+            <Box
+                position="relative"
+                onDrop={handleFileDrop}
+                onDragOver={handleFileDragOver}
+            >
                 <Input
                     display="none"
                     id={props.name}
@@ -131,16 +147,22 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
                     _hover={{ borderColor: 'gray.300' }}
                 >
                     {!file ? (
-                        <Text fontSize="sm">
-                            <Text
-                                as="span"
-                                color="primary.500"
-                                textDecoration="underline"
-                            >
-                                Add a file
-                            </Text>{' '}
-                            or drag one here
-                        </Text>
+                        isAppRunningOnMobile() ? (
+                            <Text fontSize="sm">
+                                Add a file or take one using your camera
+                            </Text>
+                        ) : (
+                            <Text fontSize="sm">
+                                <Text
+                                    as="span"
+                                    color="primary.500"
+                                    textDecoration="underline"
+                                >
+                                    Add a file
+                                </Text>{' '}
+                                or drag one here
+                            </Text>
+                        )
                     ) : (
                         <Box width="100%" height="100%">
                             <Image
