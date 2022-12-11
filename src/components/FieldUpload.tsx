@@ -25,6 +25,8 @@ import Image from 'next/image';
 import { useDownloadMedia, useUploadMedia } from '@/services/media';
 import { isAppRunningOnMobile } from '@/utils/functions/global';
 
+import { Loading } from './Loading';
+
 type FieldUploadGroupContextType = {
     isWrappedByGroup: boolean;
 };
@@ -110,6 +112,8 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
         event.preventDefault();
     };
 
+    const isLoading = isUploadLoading || isDownloadLoading;
+
     return (
         <FormControl
             isRequired={!!props.required}
@@ -131,12 +135,13 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
                     id={props.name}
                     type="file"
                     onChange={handleFileChange}
+                    isDisabled={isDisabled}
                     {...otherProps}
                 />
                 <Center
                     as="label"
                     htmlFor={props.name}
-                    cursor="pointer"
+                    cursor={isDisabled ? 'not-allowed' : 'pointer'}
                     background="white"
                     bgGradient="repeating-linear-gradient(45deg, white, white 1px, gray.50 2px, gray.50 3px)"
                     p={file ? '0' : 6}
@@ -144,25 +149,31 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
                     borderWidth="1px"
                     borderColor="gray.200"
                     transition="borderColor 0.2s"
-                    _hover={{ borderColor: 'gray.300' }}
+                    {...(!isDisabled
+                        ? {
+                              _hover: { borderColor: 'gray.300' },
+                          }
+                        : {})}
                 >
-                    {!file ? (
+                    {!isLoading && !file ? (
                         isAppRunningOnMobile() ? (
-                            <Text fontSize="sm">
+                            <Text fontSize="sm" opacity={isDisabled ? 0.6 : 1}>
                                 Add a file or take one using your camera
                             </Text>
                         ) : (
-                            <Text fontSize="sm">
+                            <Text fontSize="sm" opacity={isDisabled ? 0.6 : 1}>
                                 <Text
                                     as="span"
                                     color="primary.500"
-                                    textDecoration="underline"
+                                    _hover={{ textDecoration: 'underline' }}
                                 >
                                     Add a file
                                 </Text>{' '}
                                 or drag one here
                             </Text>
                         )
+                    ) : isLoading ? (
+                        <Loading color="primary.500" />
                     ) : (
                         <Box width="100%" height="100%">
                             <Image
