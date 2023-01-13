@@ -11,6 +11,7 @@ export {
 export { FieldInput } from './FieldInput';
 export { FieldSlider } from './FieldSlider';
 export { FieldRadio } from './FieldRadio';
+export { FieldUpload, FieldUploadGroup } from './FieldUpload';
 export { Link } from './Link';
 export { Loading } from './Loading';
 export { LoadingScreen } from './LoadingScreen';

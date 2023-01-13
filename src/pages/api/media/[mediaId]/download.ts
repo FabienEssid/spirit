@@ -17,8 +17,8 @@ export default async function handler(
     if (
         !process.env.AWS_BUCKET_NAME ||
         !process.env.AWS_BUCKET_REGION ||
-        !process.env.AWS_ACCESS_KEY_ID ||
-        !process.env.AWS_SECRET_ACCESS_KEY
+        !process.env.AWS_BUCKET_ACCESS_KEY_ID ||
+        !process.env.AWS_BUCKET_SECRET_ACCESS_KEY
     ) {
         return response.status(403).json(FORBIDDEN);
     }
@@ -44,8 +44,8 @@ export default async function handler(
     const s3Client = new S3Client({
         region,
         credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+            accessKeyId: process.env.AWS_BUCKET_ACCESS_KEY_ID || '',
+            secretAccessKey: process.env.AWS_BUCKET_SECRET_ACCESS_KEY || '',
         },
     });
 

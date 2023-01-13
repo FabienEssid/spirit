@@ -10,9 +10,13 @@ import {
 import type { InputProps, TextareaProps } from '@chakra-ui/react';
 import { FieldProps, useField } from '@formiz/core';
 
-export const FieldInput: React.FC<
-    FieldProps & InputProps & TextareaProps & { label: string }
-> = (props) => {
+type FieldInputType = FieldProps &
+    InputProps &
+    TextareaProps & {
+        label: string;
+    };
+
+export const FieldInput: React.FC<FieldInputType> = (props) => {
     const { value, setValue, errorMessage, isSubmitted, isValid } =
         useField(props);
 
@@ -28,17 +32,19 @@ export const FieldInput: React.FC<
             isInvalid={isSubmitted && !isValid}
             isDisabled={isDisabled}
         >
-            <FormLabel fontSize="sm" htmlFor={props.name}>
+            <FormLabel cursor="pointer" fontSize="sm" htmlFor={props.name}>
                 {props.label}
             </FormLabel>
             {type === 'textarea' ? (
                 <Textarea
+                    id={props.name}
                     onChange={handleChange}
                     value={value || ''}
                     {...otherProps}
                 />
             ) : type === 'file' ? (
                 <Input
+                    id={props.name}
                     type="file"
                     onChange={handleChange}
                     value={value || ''}
@@ -46,6 +52,7 @@ export const FieldInput: React.FC<
                 />
             ) : (
                 <Input
+                    id={props.name}
                     type="text"
                     onChange={handleChange}
                     value={value || ''}
