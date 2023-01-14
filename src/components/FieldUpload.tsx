@@ -53,7 +53,7 @@ export const FieldUploadGroup: React.FC<FieldUploadGroupType> = ({
     return (
         <FieldUploadGroupContext.Provider value={{ isWrappedByGroup: true }}>
             <FormControl>
-                <FormLabel>{label}</FormLabel>
+                <FormLabel fontSize="sm">{label}</FormLabel>
                 {children}
             </FormControl>
         </FieldUploadGroupContext.Provider>

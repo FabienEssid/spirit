@@ -2,6 +2,7 @@ import { Button, HStack, VStack } from '@chakra-ui/react';
 import { FormProps, Formiz } from '@formiz/core';
 
 import {
+    FieldButtonsList,
     FieldInput,
     FieldRadio,
     FieldSlider,
@@ -66,6 +67,32 @@ export const WineForm: React.FC<WineFormType> = ({
                         <FieldUpload name="medias[2]" isDisabled={isReadOnly} />
                     </HStack>
                 </FieldUploadGroup>
+                <FieldButtonsList
+                    name="wineCharacteristics"
+                    label="Characteristics"
+                    items={[
+                        {
+                            id: '1',
+                            icon: '🍷',
+                            name: 'Red wine',
+                        },
+                        {
+                            id: '2',
+                            icon: '🍸',
+                            name: 'White wine',
+                        },
+                        {
+                            id: '3',
+                            icon: '🌶',
+                            name: 'Spicy',
+                        },
+                        {
+                            id: '4',
+                            icon: '🍇',
+                            name: 'Grape taste',
+                        },
+                    ]}
+                />
                 <FieldSlider
                     name="rating"
                     label="Rating"

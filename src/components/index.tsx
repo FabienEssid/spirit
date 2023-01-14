@@ -1,3 +1,4 @@
+export { Badge } from './Badge';
 export { Card } from './Card';
 export {
     Datalist,
@@ -8,6 +9,7 @@ export {
     DatalistRow,
     DatalistRowHeader,
 } from './Datalist';
+export { FieldButtonsList } from './FieldButtonsList';
 export { FieldInput } from './FieldInput';
 export { FieldSlider } from './FieldSlider';
 export { FieldRadio } from './FieldRadio';

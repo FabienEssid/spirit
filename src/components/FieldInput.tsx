@@ -20,7 +20,7 @@ export const FieldInput: React.FC<FieldInputType> = (props) => {
     const { value, setValue, errorMessage, isSubmitted, isValid } =
         useField(props);
 
-    const { defaultValue, required, type, isDisabled, ...otherProps } = props;
+    const { required, type, isDisabled, ...otherProps } = props;
 
     const handleChange = (e: any) => {
         setValue(e.target.value);
