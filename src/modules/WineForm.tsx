@@ -21,6 +21,7 @@ type WineFormType = Pick<
 > & {
     isLoading: boolean;
     isReadOnly?: boolean;
+    isUpdateMode?: boolean;
 };
 
 export const WineForm: React.FC<WineFormType> = ({
@@ -31,6 +32,7 @@ export const WineForm: React.FC<WineFormType> = ({
     initialValues,
     isLoading,
     isReadOnly,
+    isUpdateMode,
 }) => {
     const shouldDisableSubmitButton =
         (form.isSubmitted && !form.isValid) || isLoading;
@@ -111,7 +113,7 @@ export const WineForm: React.FC<WineFormType> = ({
                         isDisabled={shouldDisableSubmitButton}
                     >
                         {isLoading && <Loading size="sm" mr="2" />}
-                        Add
+                        {isUpdateMode ? 'Update' : 'Add'}
                     </Button>
                 )}
             </VStack>

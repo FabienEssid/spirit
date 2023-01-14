@@ -80,6 +80,7 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                     </Flex>
                     <WineForm
                         connect={form}
+                        isUpdateMode
                         isLoading={isLoading}
                         isReadOnly={isReadOnly}
                         initialValues={wine}
