@@ -63,15 +63,16 @@ export const FieldUploadGroup: React.FC<FieldUploadGroupType> = ({
 export const FieldUpload: React.FC<FieldUploadType> = (props) => {
     const { isWrappedByGroup } = useFieldUploadGroupContext();
 
-    const [file, setFile] = useState<Blob | null>(null);
-    const { errorMessage, isSubmitted, isValid, setValue } = useField(props);
+    const [file, setFile] = useState<string | null>(null);
+    const { errorMessage, isSubmitted, isValid, setValue, value } =
+        useField(props);
 
     const {
         data: uploadedMediaResponse,
         mutate: uploadMedia,
         isLoading: isUploadLoading,
     } = useUploadMedia();
-    const { data: uploadedMedia } = uploadedMediaResponse || { data: null };
+    const { data: uploadedMedia } = uploadedMediaResponse || { data: value };
 
     const {
         data: downloadedMediaResponse,
@@ -199,6 +200,7 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
                             setFile(null);
                             setValue(null);
                         }}
+                        isDisabled={isDisabled}
                         icon={<Icon as={XMarkIcon} />}
                     />
                 )}

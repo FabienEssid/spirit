@@ -1,31 +1,16 @@
-import {
-    Box,
-    Button,
-    Flex,
-    Heading,
-    Icon,
-    IconButton,
-    VStack,
-} from '@chakra-ui/react';
-import { Formiz, useForm } from '@formiz/core';
+import { Flex, Heading, Icon, IconButton } from '@chakra-ui/react';
+import { useForm } from '@formiz/core';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import { GetServerSidePropsContext } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
-import {
-    Card,
-    FieldInput,
-    FieldRadio,
-    FieldSlider,
-    Loading,
-    useToastError,
-    useToastSuccess,
-} from '@/components';
+import { Card, useToastError, useToastSuccess } from '@/components';
 import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
+import { WineForm } from '@/modules';
 import { useUpdateWine } from '@/services/wines';
-import { FALSE, TRUE } from '@/utils/constants/global';
+import { TRUE } from '@/utils/constants/global';
 import { ROUTE_WINES } from '@/utils/constants/routes';
 
 export const PageWineDetails = ({ wine }: { wine: any }) => {
@@ -65,9 +50,6 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
         mutate(wineToUpdate);
     };
 
-    const shouldDisableSubmitButton =
-        (form.isSubmitted && !form.isValid) || isLoading;
-
     return (
         <Layout>
             <LayoutHeader />
@@ -96,89 +78,13 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                             </NextLink>
                         )}
                     </Flex>
-                    <Formiz
+                    <WineForm
                         connect={form}
-                        autoForm
+                        isLoading={isLoading}
+                        isReadOnly={isReadOnly}
+                        initialValues={wine}
                         onValidSubmit={handleValidSubmit}
-                    >
-                        <VStack mt="4" spacing="4" alignItems="stretch">
-                            <FieldInput
-                                name="name"
-                                label="Name"
-                                required="The name is required"
-                                defaultValue={wine.name}
-                                isDisabled={isReadOnly}
-                            />
-                            <FieldInput
-                                type="textarea"
-                                name="description"
-                                label="Description"
-                                defaultValue={wine.description}
-                                isDisabled={isReadOnly}
-                            />
-                            <FieldSlider
-                                name="rating"
-                                label="Rating"
-                                min={0}
-                                max={10}
-                                step={1}
-                                colorScheme="primary"
-                                mb="4"
-                                sliderMarksProps={{
-                                    top: '0.75em',
-                                }}
-                                sliderMarks={[
-                                    { value: 0, label: '0' },
-                                    { value: 1, label: '1' },
-                                    { value: 2, label: '2' },
-                                    { value: 3, label: '3' },
-                                    { value: 4, label: '4' },
-                                    { value: 5, label: '5' },
-                                    { value: 6, label: '6' },
-                                    { value: 7, label: '7' },
-                                    { value: 8, label: '8' },
-                                    { value: 9, label: '9' },
-                                    { value: 10, label: '10' },
-                                ]}
-                                defaultValue={wine.rating}
-                                isDisabled={isReadOnly}
-                            />
-                            <FieldRadio
-                                name="isPinned"
-                                label="Do you want to pin this wine ?"
-                                as={VStack}
-                                alignItems="flex-start"
-                                colorScheme="primary"
-                                options={[
-                                    { value: TRUE, label: 'Yes' },
-                                    { value: FALSE, label: 'No' },
-                                ]}
-                                defaultValue={wine.isPinned ? TRUE : FALSE}
-                                isDisabled={isReadOnly}
-                            />
-                        </VStack>
-                        {!isReadOnly && (
-                            <Box
-                                position="fixed"
-                                zIndex="docked"
-                                bottom="0"
-                                left="0"
-                                right="0"
-                                p="4"
-                                boxShadow="xs"
-                            >
-                                <Button
-                                    type="submit"
-                                    colorScheme="primary"
-                                    isDisabled={shouldDisableSubmitButton}
-                                    width="full"
-                                >
-                                    {isLoading && <Loading size="sm" mr="2" />}
-                                    Update
-                                </Button>
-                            </Box>
-                        )}
-                    </Formiz>
+                    />
                 </Card>
             </LayoutBody>
         </Layout>
@@ -192,6 +98,9 @@ export const getServerSideProps = async (
     const result = await db.wine.findFirst({
         where: {
             id: wineId,
+        },
+        include: {
+            medias: true,
         },
     });
     const wine = result || undefined;

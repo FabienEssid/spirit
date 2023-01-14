@@ -1,28 +1,20 @@
 import React from 'react';
 
-import { Button, HStack, Heading, VStack } from '@chakra-ui/react';
-import { Formiz, useForm } from '@formiz/core';
+import { Heading } from '@chakra-ui/react';
+import { useForm } from '@formiz/core';
 
-import {
-    Card,
-    FieldInput,
-    FieldRadio,
-    FieldSlider,
-    FieldUpload,
-    FieldUploadGroup,
-    Loading,
-    useToastError,
-    useToastSuccess,
-} from '@/components';
+import { Card, useToastError, useToastSuccess } from '@/components';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
+import { WineForm } from '@/modules';
 import { useAddWine } from '@/services/wines';
-import { FALSE, TRUE } from '@/utils/constants/global';
+import { TRUE } from '@/utils/constants/global';
 
 export const PageHome = () => {
     const toastSuccess = useToastSuccess();
     const toastError = useToastError();
 
     const form = useForm();
+
     const { mutate, isLoading } = useAddWine({
         onSuccess: () => {
             form.reset();
@@ -51,9 +43,6 @@ export const PageHome = () => {
         mutate(wineToCreate);
     };
 
-    const shouldDisableSubmitButton =
-        (form.isSubmitted && !form.isValid) || isLoading;
-
     return (
         <Layout>
             <LayoutHeader />
@@ -65,77 +54,11 @@ export const PageHome = () => {
                     <Heading as="h2" size="sm">
                         Add a wine
                     </Heading>
-                    <Formiz
-                        autoForm
-                        onValidSubmit={handleValidSubmit}
+                    <WineForm
                         connect={form}
-                    >
-                        <VStack mt="4" spacing="4" alignItems="stretch">
-                            <FieldInput
-                                name="name"
-                                label="Name"
-                                required="The name is required"
-                            />
-                            <FieldInput
-                                type="textarea"
-                                name="description"
-                                label="Description"
-                            />
-                            <FieldUploadGroup label="Media">
-                                <HStack spacing="2">
-                                    <FieldUpload name="media[0]" />
-                                    <FieldUpload name="media[1]" />
-                                    <FieldUpload name="media[2]" />
-                                </HStack>
-                            </FieldUploadGroup>
-                            <FieldSlider
-                                name="rating"
-                                label="Rating"
-                                min={0}
-                                max={10}
-                                step={1}
-                                colorScheme="primary"
-                                mb="4"
-                                sliderMarksProps={{
-                                    top: '0.75em',
-                                }}
-                                sliderMarks={[
-                                    { value: 0, label: '0' },
-                                    { value: 1, label: '1' },
-                                    { value: 2, label: '2' },
-                                    { value: 3, label: '3' },
-                                    { value: 4, label: '4' },
-                                    { value: 5, label: '5' },
-                                    { value: 6, label: '6' },
-                                    { value: 7, label: '7' },
-                                    { value: 8, label: '8' },
-                                    { value: 9, label: '9' },
-                                    { value: 10, label: '10' },
-                                ]}
-                            />
-                            <FieldRadio
-                                name="isPinned"
-                                label="Do you want to pin this wine ?"
-                                as={VStack}
-                                alignItems="flex-start"
-                                colorScheme="primary"
-                                options={[
-                                    { value: TRUE, label: 'Yes' },
-                                    { value: FALSE, label: 'No' },
-                                ]}
-                                defaultValue={FALSE}
-                            />
-
-                            <Button
-                                type="submit"
-                                colorScheme="primary"
-                                isDisabled={shouldDisableSubmitButton}
-                            >
-                                {isLoading && <Loading size="sm" mr="2" />}
-                                Add
-                            </Button>
-                        </VStack>
-                    </Formiz>
+                        isLoading={isLoading}
+                        onValidSubmit={handleValidSubmit}
+                    />
                 </Card>
             </LayoutBody>
         </Layout>

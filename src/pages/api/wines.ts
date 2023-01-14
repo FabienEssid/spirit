@@ -106,6 +106,11 @@ const addWine = async (
         return response.status(403).json(FORBIDDEN);
     }
 
+    const medias: Media[] = request.body?.medias; // FIXME: Type
+    const mediasIds = medias
+        .filter((media) => media)
+        .map((media) => ({ id: media.id }));
+
     const createdWine = await db.wine.create({
         data: {
             ...request.body,
@@ -113,6 +118,9 @@ const addWine = async (
                 connect: {
                     id: user.id,
                 },
+            },
+            medias: {
+                connect: mediasIds,
             },
         },
     });

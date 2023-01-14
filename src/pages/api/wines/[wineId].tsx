@@ -1,3 +1,4 @@
+import { Media } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
@@ -69,12 +70,17 @@ const updateWine = async (
         return response.status(400).json(BAD_REQUEST);
     }
 
+    const medias = (request.body.medias as Media[]).filter((media) => media);
+
     const updatedWine = await db.wine.update({
         where: {
             id: wine.id,
         },
         data: {
             ...request.body,
+            medias: {
+                connect: (medias || []).map((media) => ({ id: media.id })),
+            },
         },
     });
 
