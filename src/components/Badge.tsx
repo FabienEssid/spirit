@@ -2,13 +2,16 @@ import { useState } from 'react';
 
 import { Button, ButtonProps, Text } from '@chakra-ui/react';
 
-export type BadgeType = ButtonProps;
+export type BadgeType = ButtonProps & {
+    isDefaultSelected?: boolean;
+};
 
-export const Badge: React.FC<ButtonProps> = ({
+export const Badge: React.FC<BadgeType> = ({
     onClick = () => {},
+    isDefaultSelected = false,
     ...otherProps
 }) => {
-    const [isSelected, setIsSelected] = useState<boolean>(false);
+    const [isSelected, setIsSelected] = useState<boolean>(isDefaultSelected);
 
     return (
         <Button

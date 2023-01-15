@@ -74,6 +74,7 @@ export const WineForm: React.FC<WineFormType> = ({
                     name="wineCharacteristics"
                     label="Characteristics"
                     items={wineCharacteristics}
+                    isDisabled={isReadOnly}
                 />
                 <FieldSlider
                     name="rating"

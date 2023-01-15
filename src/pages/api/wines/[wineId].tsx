@@ -1,4 +1,4 @@
-import { Media } from '@prisma/client';
+import { Media, Wine, WineCharacteristic } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
@@ -15,20 +15,9 @@ export default async function handler(
     request: NextApiRequest,
     response: NextApiResponse<unknown>
 ) {
-    if (request.method === 'POST') {
-        return await updateWine(request, response);
-    }
-
-    if (request.method === 'DELETE') {
-        return await deleteWine(request, response);
-    }
-}
-
-const updateWine = async (
-    request: NextApiRequest,
-    response: NextApiResponse<any>
-) => {
-    const { wineId } = request.query;
+    const wineId = Array.isArray(request.query.wineId)
+        ? request.query.wineId[0]
+        : request.query.wineId;
 
     if (!wineId) {
         return response.status(400).json(BAD_REQUEST);
@@ -57,74 +46,94 @@ const updateWine = async (
         return response.status(403).json(FORBIDDEN);
     }
 
-    const wine = await db.wine.findUnique({
+    if (request.method === 'POST') {
+        const wine = await db.wine.findUnique({
+            where: {
+                id: `${wineId}`,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!wine) {
+            return response.status(400).json(BAD_REQUEST);
+        }
+
+        const result = await updateWine({ wineId, data: request.body });
+        return response.status(201).json(result);
+    }
+
+    if (request.method === 'DELETE') {
+        await deleteWine({ wineId });
+        return response.status(201).json(RESOURCE_DELETED);
+    }
+}
+
+const updateWine = async ({
+    wineId,
+    data,
+}: {
+    wineId: Wine['id'];
+    data: Omit<Wine, 'userId'> & {
+        medias: Media['id'][];
+        wineCharacteristics: WineCharacteristic['id'][];
+    };
+}) => {
+    const { medias, wineCharacteristics, ...rest } = data;
+
+    const filteredMedias = medias.filter((media) => media);
+    const mediasId = filteredMedias.map((media) => ({ id: media }));
+
+    const wineCharacteristicsId = wineCharacteristics.map(
+        (wineCharacteristic) => ({ id: wineCharacteristic })
+    );
+
+    await db.wineCharacteristicsOnWines.deleteMany({
         where: {
-            id: `${wineId}`,
-        },
-        select: {
-            id: true,
+            wineId,
         },
     });
 
-    if (!wine) {
-        return response.status(400).json(BAD_REQUEST);
-    }
-
-    const medias = (request.body.medias as Media[]).filter((media) => media);
-
-    const updatedWine = await db.wine.update({
+    await db.media.deleteMany({
         where: {
-            id: wine.id,
-        },
-        data: {
-            ...request.body,
-            medias: {
-                connect: (medias || []).map((media) => ({ id: media.id })),
+            AND: {
+                NOT: {
+                    id: {
+                        in: filteredMedias,
+                    },
+                },
+                wineId,
             },
         },
     });
 
-    return response.status(201).json(updatedWine);
-};
-
-const deleteWine = async (
-    request: NextApiRequest,
-    response: NextApiResponse<any>
-) => {
-    const { wineId } = request.query;
-
-    if (!wineId) {
-        return response.status(400).json(BAD_REQUEST);
-    }
-
-    const session = await unstable_getServerSession(
-        request,
-        response,
-        authOptions
-    );
-
-    if (!session) {
-        return response.status(403).json(FORBIDDEN);
-    }
-
-    const user = await db.user.findUnique({
+    const updatedWine = await db.wine.update({
         where: {
-            email: session?.user?.email || undefined,
+            id: wineId,
         },
-        select: {
-            id: true,
+        data: {
+            ...rest,
+            medias: {
+                connect: mediasId,
+            },
+            wineCharacteristics: {
+                create: wineCharacteristicsId.map((wineCharacteristicId) => ({
+                    wineCharacteristic: {
+                        connect: wineCharacteristicId,
+                    },
+                })),
+            },
         },
     });
 
-    if (!user) {
-        return response.status(403).json(FORBIDDEN);
-    }
+    return updatedWine;
+};
 
+const deleteWine = async ({ wineId }: { wineId: Wine['id'] }) => {
     await db.wine.delete({
         where: {
             id: `${wineId}`,
         },
     });
-
-    return response.status(201).json(RESOURCE_DELETED);
 };

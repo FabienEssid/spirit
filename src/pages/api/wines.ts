@@ -1,4 +1,4 @@
-import { Media, Wine } from '@prisma/client';
+import { Media, Wine, WineCharacteristic } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { unstable_getServerSession } from 'next-auth';
 
@@ -12,26 +12,6 @@ export default async function handler(
     request: NextApiRequest,
     response: NextApiResponse<unknown>
 ) {
-    if (request.method === 'GET') {
-        return await getWines(request, response);
-    }
-
-    if (request.method === 'POST') {
-        return await addWine(request, response);
-    }
-}
-
-const getWines = async (
-    request: NextApiRequest,
-    response: NextApiResponse<
-        [totalItems: number, wines: (Wine & { medias: Media[] })[]] | string // TODO: Fix this
-    >
-) => {
-    const {
-        pageSize = PAGE_SIZE,
-        page = 1,
-    }: Partial<{ pageSize: number; page: number }> = request.query;
-
     const session = await unstable_getServerSession(
         request,
         response,
@@ -55,13 +35,42 @@ const getWines = async (
         return response.status(403).json(FORBIDDEN);
     }
 
+    if (request.method === 'GET') {
+        const { pageSize, page }: Partial<{ pageSize: number; page: number }> =
+            request.query;
+        const result = await getWines({
+            pageSize,
+            page,
+            userId: user.id,
+        });
+        return response.status(200).json(result);
+    }
+
+    if (request.method === 'POST') {
+        const createdWine = await addWine({
+            data: request.body,
+            userId: user.id,
+        });
+        response.status(201).json(createdWine);
+    }
+}
+
+const getWines = async ({
+    pageSize = PAGE_SIZE,
+    page = 1,
+    userId,
+}: {
+    pageSize?: number;
+    page?: number;
+    userId: string;
+}) => {
     const parsedPage = parseInt(`${page}`);
     const parsedPageSize = parseInt(`${pageSize}`);
 
     const [totalItems, wines] = await db.$transaction([
         db.wine.count({
             where: {
-                userId: user.id,
+                userId: userId,
             },
         }),
         db.wine.findMany({
@@ -71,59 +80,54 @@ const getWines = async (
                 medias: true,
             },
             where: {
-                userId: user.id,
+                userId: userId,
             },
         }),
     ]);
 
-    return response.status(200).json([totalItems, wines]);
+    return [totalItems, wines];
 };
 
-const addWine = async (
-    request: NextApiRequest,
-    response: NextApiResponse<any>
-) => {
-    const session = await unstable_getServerSession(
-        request,
-        response,
-        authOptions
-    );
+const addWine = async ({
+    data,
+    userId,
+}: {
+    data: Omit<Wine, 'userId'> & {
+        medias: Media['id'][];
+        wineCharacteristics: WineCharacteristic['id'][];
+    };
+    userId: string;
+}) => {
+    const { medias, wineCharacteristics, ...rest } = data;
 
-    if (!session) {
-        return response.status(403).json(FORBIDDEN);
-    }
-
-    const user = await db.user.findUnique({
-        where: {
-            email: session?.user?.email || undefined,
-        },
-        select: {
-            id: true,
-        },
-    });
-
-    if (!user) {
-        return response.status(403).json(FORBIDDEN);
-    }
-
-    const medias: Media[] = request.body?.medias; // FIXME: Type
-    const mediasIds = medias
+    const mediasId = medias
         .filter((media) => media)
-        .map((media) => ({ id: media.id }));
+        .map((media) => ({ id: media }));
+
+    const wineCharacteristicsId = wineCharacteristics.map(
+        (wineCharacteristic) => ({ id: wineCharacteristic })
+    );
 
     const createdWine = await db.wine.create({
         data: {
-            ...request.body,
+            ...rest,
             user: {
                 connect: {
-                    id: user.id,
+                    id: userId,
                 },
             },
             medias: {
-                connect: mediasIds,
+                connect: mediasId,
+            },
+            wineCharacteristics: {
+                create: wineCharacteristicsId.map((wineCharacteristicId) => ({
+                    wineCharacteristic: {
+                        connect: wineCharacteristicId,
+                    },
+                })),
             },
         },
     });
 
-    return response.status(201).json(createdWine);
+    return createdWine;
 };

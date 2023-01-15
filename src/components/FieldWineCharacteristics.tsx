@@ -5,7 +5,7 @@ import {
     FormLabel,
     Text,
 } from '@chakra-ui/react';
-import { FieldProps, useField } from '@formiz/core';
+import { Field, FieldProps, useField } from '@formiz/core';
 import { WineCharacteristic } from '@prisma/client';
 
 import { Badge, BadgeType } from './Badge';
@@ -20,8 +20,15 @@ export type FieldWineCharacteristicsType = FieldProps & {
 export const FieldWineCharacteristics: React.FC<
     FieldProps & FieldWineCharacteristicsType
 > = (props) => {
-    const { errorMessage, isSubmitted, isValid, setValue, value } =
-        useField(props);
+    const {
+        errorMessage,
+        isSubmitted,
+        isValid,
+        setValue,
+        value,
+    }: Omit<Field, 'value'> & {
+        value: WineCharacteristic['id'][] | undefined;
+    } = useField(props);
     const { badgeProps, isDisabled, items, label, required, ...otherProps } =
         props;
 
@@ -32,7 +39,7 @@ export const FieldWineCharacteristics: React.FC<
         if (index === -1) {
             setValue([...(value || []), id]);
         } else {
-            const selectedItems = [...value];
+            const selectedItems = [...(value || [])];
             selectedItems.splice(index, 1);
             setValue(selectedItems);
         }
@@ -53,6 +60,13 @@ export const FieldWineCharacteristics: React.FC<
                         onClick={() => handleClick(item.id)}
                         my="1"
                         mr="1"
+                        isDefaultSelected={
+                            !!value?.find(
+                                (wineCharacteristicId) =>
+                                    wineCharacteristicId === item.id
+                            )
+                        }
+                        isDisabled={isDisabled}
                         {...badgeProps}
                     >
                         {item.name}

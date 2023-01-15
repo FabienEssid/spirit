@@ -72,7 +72,10 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
         mutate: uploadMedia,
         isLoading: isUploadLoading,
     } = useUploadMedia();
-    const { data: uploadedMedia } = uploadedMediaResponse || { data: value };
+    const { data: { id: uploadedMedia } = { id: undefined } } =
+        uploadedMediaResponse || {
+            data: { id: value },
+        };
 
     const {
         data: downloadedMediaResponse,
@@ -86,7 +89,7 @@ export const FieldUpload: React.FC<FieldUploadType> = (props) => {
     useEffect(() => {
         if (uploadedMedia) {
             setValue(uploadedMedia);
-            downloadMedia({ mediaId: uploadedMedia.id });
+            downloadMedia({ mediaId: uploadedMedia });
         }
     }, [downloadMedia, uploadedMedia, setValue]);
 

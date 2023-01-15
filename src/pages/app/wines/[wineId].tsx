@@ -1,6 +1,7 @@
 import { Flex, Heading, Icon, IconButton } from '@chakra-ui/react';
 import { useForm } from '@formiz/core';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { Wine, WineCharacteristic } from '@prisma/client';
 import { GetServerSidePropsContext } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,11 +10,18 @@ import { Card, useToastError, useToastSuccess } from '@/components';
 import { db } from '@/db/prisma';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
 import { WineForm } from '@/modules';
+import { getWineCharacteristics } from '@/pages/api/wine-characteristics';
 import { useUpdateWine } from '@/services/wines';
 import { TRUE } from '@/utils/constants/global';
 import { ROUTE_WINES } from '@/utils/constants/routes';
 
-export const PageWineDetails = ({ wine }: { wine: any }) => {
+export const PageWineDetails = ({
+    wine,
+    wineCharacteristics,
+}: {
+    wine: Wine;
+    wineCharacteristics: WineCharacteristic[];
+}) => {
     const toastSuccess = useToastSuccess();
     const toastError = useToastError();
     const form = useForm();
@@ -84,7 +92,7 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                         isLoading={isLoading}
                         isReadOnly={isReadOnly}
                         initialValues={wine}
-                        wineCharacteristics={[]}
+                        wineCharacteristics={wineCharacteristics}
                         onValidSubmit={handleValidSubmit}
                     />
                 </Card>
@@ -102,14 +110,34 @@ export const getServerSideProps = async (
             id: wineId,
         },
         include: {
-            medias: true,
+            medias: {
+                select: {
+                    id: true,
+                },
+            },
+            wineCharacteristics: {
+                select: {
+                    wineCharacteristic: true,
+                },
+            },
         },
     });
-    const wine = result || undefined;
 
-    if (!wine) return { props: { wine: null } };
+    const medias = result?.medias.map((media) => media.id);
+    const wineCharacteristics = result?.wineCharacteristics.map(
+        (wineCharacteristicOnWine) =>
+            wineCharacteristicOnWine.wineCharacteristic.id
+    );
+    const wine = { ...result, medias, wineCharacteristics } || undefined;
 
-    return { props: { wine } };
+    const allWineCharacteristics = await getWineCharacteristics();
+
+    return {
+        props: {
+            wine: wine || null,
+            wineCharacteristics: allWineCharacteristics?.[1] || [],
+        },
+    };
 };
 
 export default PageWineDetails;
