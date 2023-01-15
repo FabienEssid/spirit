@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Heading } from '@chakra-ui/react';
 import { useForm } from '@formiz/core';
+import { WineCharacteristic } from '@prisma/client';
 
 import { Card, useToastError, useToastSuccess } from '@/components';
 import { Layout, LayoutBody, LayoutHeader } from '@/layout';
@@ -9,7 +10,13 @@ import { WineForm } from '@/modules';
 import { useAddWine } from '@/services/wines';
 import { TRUE } from '@/utils/constants/global';
 
-export const PageHome = () => {
+import { getWineCharacteristics } from '../api/wine-characteristics';
+
+export const PageHome = ({
+    wineCharacteristics,
+}: {
+    wineCharacteristics: WineCharacteristic[];
+}) => {
     const toastSuccess = useToastSuccess();
     const toastError = useToastError();
 
@@ -58,11 +65,17 @@ export const PageHome = () => {
                         connect={form}
                         isLoading={isLoading}
                         onValidSubmit={handleValidSubmit}
+                        wineCharacteristics={wineCharacteristics}
                     />
                 </Card>
             </LayoutBody>
         </Layout>
     );
+};
+
+export const getServerSideProps = async () => {
+    const result = await getWineCharacteristics();
+    return { props: { wineCharacteristics: result[1] } };
 };
 
 export default PageHome;

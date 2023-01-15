@@ -6,23 +6,20 @@ import {
     Text,
 } from '@chakra-ui/react';
 import { FieldProps, useField } from '@formiz/core';
+import { WineCharacteristic } from '@prisma/client';
 
 import { Badge, BadgeType } from './Badge';
 
-export type FieldButtonsListType = FieldProps & {
-    items: {
-        id: string;
-        icon: string;
-        name: string;
-    }[];
+export type FieldWineCharacteristicsType = FieldProps & {
+    items: WineCharacteristic[];
     label?: string;
     isDisabled?: boolean;
     badgeProps?: BadgeType;
 };
 
-export const FieldButtonsList: React.FC<FieldProps & FieldButtonsListType> = (
-    props
-) => {
+export const FieldWineCharacteristics: React.FC<
+    FieldProps & FieldWineCharacteristicsType
+> = (props) => {
     const { errorMessage, isSubmitted, isValid, setValue, value } =
         useField(props);
     const { badgeProps, isDisabled, items, label, required, ...otherProps } =

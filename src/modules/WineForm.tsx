@@ -1,13 +1,14 @@
 import { Button, HStack, VStack } from '@chakra-ui/react';
 import { FormProps, Formiz } from '@formiz/core';
+import { WineCharacteristic } from '@prisma/client';
 
 import {
-    FieldButtonsList,
     FieldInput,
     FieldRadio,
     FieldSlider,
     FieldUpload,
     FieldUploadGroup,
+    FieldWineCharacteristics,
     Loading,
 } from '@/components';
 import { FALSE, TRUE } from '@/utils/constants/global';
@@ -23,6 +24,7 @@ type WineFormType = Pick<
     isLoading: boolean;
     isReadOnly?: boolean;
     isUpdateMode?: boolean;
+    wineCharacteristics: WineCharacteristic[];
 };
 
 export const WineForm: React.FC<WineFormType> = ({
@@ -34,6 +36,7 @@ export const WineForm: React.FC<WineFormType> = ({
     isLoading,
     isReadOnly,
     isUpdateMode,
+    wineCharacteristics,
 }) => {
     const shouldDisableSubmitButton =
         (form.isSubmitted && !form.isValid) || isLoading;
@@ -67,31 +70,10 @@ export const WineForm: React.FC<WineFormType> = ({
                         <FieldUpload name="medias[2]" isDisabled={isReadOnly} />
                     </HStack>
                 </FieldUploadGroup>
-                <FieldButtonsList
+                <FieldWineCharacteristics
                     name="wineCharacteristics"
                     label="Characteristics"
-                    items={[
-                        {
-                            id: '1',
-                            icon: '🍷',
-                            name: 'Red wine',
-                        },
-                        {
-                            id: '2',
-                            icon: '🍸',
-                            name: 'White wine',
-                        },
-                        {
-                            id: '3',
-                            icon: '🌶',
-                            name: 'Spicy',
-                        },
-                        {
-                            id: '4',
-                            icon: '🍇',
-                            name: 'Grape taste',
-                        },
-                    ]}
+                    items={wineCharacteristics}
                 />
                 <FieldSlider
                     name="rating"

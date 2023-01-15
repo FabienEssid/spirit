@@ -84,6 +84,7 @@ export const PageWineDetails = ({ wine }: { wine: any }) => {
                         isLoading={isLoading}
                         isReadOnly={isReadOnly}
                         initialValues={wine}
+                        wineCharacteristics={[]}
                         onValidSubmit={handleValidSubmit}
                     />
                 </Card>
