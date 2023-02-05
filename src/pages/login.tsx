@@ -130,6 +130,7 @@ export const PageLogin: React.FC = () => {
                                             name="email"
                                             label="Email address"
                                             required
+                                            autoFocus
                                         />
                                     </Stack>
                                     <Stack spacing="12">
